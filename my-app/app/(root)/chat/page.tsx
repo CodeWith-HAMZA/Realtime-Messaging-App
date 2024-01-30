@@ -6,28 +6,19 @@ function App() {
   const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080");
 
-    socket.addEventListener("message", (event) => {
-      const message = event.data;
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+
 
     return () => {
-      socket.close();
     };
   }, []);
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const socket = new WebSocket("ws://localhost:8080");
-    socket.send(inputValue);
-    setInputValue("");
-  };
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    console.log("first")
+
+  }
+
 
   return (
     <div className="App">
@@ -42,8 +33,6 @@ function App() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={inputValue}
-          onChange={handleInputChange}
           placeholder="Type a message..."
         />
         <button type="submit">Send</button>

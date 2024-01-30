@@ -1,157 +1,176 @@
-"use client";
-import Link from "next/link";
-import React, { useState } from "react";
+'use client'
+import React, { useState } from 'react';
 
-const RegisterPage = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+const SignUp = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    const form = new FormData();
-    form.append("username", formData.username);
-    form.append("email", formData.email);
-    form.append("password", formData.password);
-    form.append("confirmPassword", formData.confirmPassword);
-    console.log(form);
+    // Create FormData object from the form element
+    const formData = new FormData(e.target);
 
-    // try {
-    //   // Make a fetch or Axios request to send the form data to your server
-    //   const response = await fetch("/api/register", {
-    //     method: "POST",
-    //     body: form,
-    //   });
+    // Convert FormData to a plain object
+    const formDataObject = {};
+    formData.forEach((value, key) => {
+      formDataObject[key] = value;
+    });
 
-    //   if (response.ok) {
-    //     // Registration was successful, handle the response
-    //     const data = await response.json();
-    //     console.log("Registration successful:", data);
-    //   } else {
-    //     // Registration failed, handle the error
-    //     console.error("Registration failed");
-    //   }
-    // } catch (error) {
-    //   console.error("Error during registration:", error);
-    // }
+    // Log all the state variables
+    console.log('First Name:', firstName);
+    console.log('Last Name:', lastName);
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Confirm Password:', confirmPassword);
+    console.log('Date of Birth:', dob);
+    console.log('Gender:', gender);
+    console.log('Terms Accepted:', termsAccepted);
+ 
+    console.log('Form Data:', formDataObject);
+
+    // Perform further form submission logic here
   };
 
+
   return (
-    <div className=" min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h1 className="text-3xl font-semibold mb-6 text-center text-black">
-          Create an Account
-        </h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block mb-2 text-gray-800 font-medium text-black"
-            >
-              Username
+    <div className="mx-auto max-w-sm space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Sign Up</h1>
+          <p className="text-gray-500 dark:text-gray-400">Enter your information to create an account</p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label htmlFor="first-name" className="text-sm font-medium leading-none">
+              First name
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-md bg-gray-200 focus:outline-none focus:ring focus:border-blue-500"
+              id="first-name"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Lee"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-gray-800 font-medium text-black"
-            >
-              Email
+          <div className="space-y-2">
+            <label htmlFor="last-name" className="text-sm font-medium leading-none">
+              Last name
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-md bg-gray-200 focus:outline-none focus:ring focus:border-blue-500"
+              type="text"
+              id="last-name"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Robinson"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block mb-2 text-gray-800 font-medium text-black"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-md bg-gray-200 focus:outline-none focus:ring focus:border-blue-500"
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="confirm-password"
-              className="block mb-2 text-gray-800 font-medium text-black"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirm-password"
-              name="confirmPassword"
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-md bg-gray-200 focus:outline-none focus:ring focus:border-blue-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md transition duration-300"
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium leading-none">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder="m@example.com"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="password" className="text-sm font-medium leading-none">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="confirm-password" className="text-sm font-medium leading-none">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirm-password"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="dob" className="text-sm font-medium leading-none">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="dob"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            required
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="gender" className="text-sm font-medium leading-none">
+            Gender
+          </label>
+          <select
+            id="gender"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={(e) => setGender(e.target.value)}
+            value={gender}
           >
-            Register
-          </button>
-        </form>
-        <div className="mt-4 flex justify-between items-center">
-          <hr className="w-1/4 border-t border-gray-300" />
-          <span className="text-gray-600 text-black">OR</span>
-          <hr className="w-1/4 border-t border-gray-300" />
+            <option value="" disabled>Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
         </div>
-        <div className="mt-4 space-y-2">
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition duration-300">
-            Register with Facebook
-          </button>
-          <button className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-md transition duration-300">
-            Register with Google
-          </button>
+
+        <div className="space-y-2">
+          <label htmlFor="terms" className="text-sm font-medium leading-none flex items-center">
+            <input
+              type="checkbox" 
+
+              aria-required={termsAccepted}
+
+
+
+              className="h-4 w-4 text-black bg-black"
+              id="terms"
+              onClick={() => setTermsAccepted(!termsAccepted)}
+            />
+            <span className="ml-2">I accept the terms and conditions</span>
+          </label>
         </div>
-        <p className="text-gray-600 mt-6 text-center text-black">
-          Already have an account?{" "}
-          <Link href="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
-        </p>
-        <p className="text-gray-600 mt-4 text-center text-black">
-          By registering, you agree to our{" "}
-          <a href="#" className="text-blue-500 hover:underline">
-            Terms
-          </a>{" "}
-          and{" "}
-          <a href="#" className="text-blue-500 hover:underline">
-            Privacy Policy
-          </a>
-          .
-        </p>
-      </div>
+        <button
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+          type="submit"
+        >
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 };
 
-export default RegisterPage;
+export default SignUp;

@@ -1,5 +1,5 @@
 import React from "react";
-import Message from "./Message";
+import Message from "./cards/Message";
 
 const MessagesList = () => {
   return (
