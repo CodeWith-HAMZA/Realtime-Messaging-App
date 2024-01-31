@@ -5,13 +5,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-
-
-
-    return () => {
-    };
-  }, []);
+ 
 
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

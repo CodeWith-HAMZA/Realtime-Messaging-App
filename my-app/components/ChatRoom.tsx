@@ -93,7 +93,6 @@ import Chat from "./Chat";
 const ChatRoom = () => {
   return (
     <div className="font-sans bg-gray-100 h-screen flex">
-      <Sidebar />
       <Chat />
     </div>
   );

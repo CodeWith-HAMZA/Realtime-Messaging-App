@@ -1,3 +1,4 @@
+import Sidebar from "@/components/SideBar";
 import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -17,7 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main>{children}</main>
+        <main className="font-sans bg-gray-100 h-screen flex">
+          <Sidebar />
+          {children}
+
+        </main>
       </body>
     </html>
   );

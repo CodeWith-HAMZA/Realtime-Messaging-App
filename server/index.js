@@ -29,6 +29,7 @@ app.get("/api/chat", function (req, res) {
 })
 app.get("/api/chat/:id", function (req, res) {
   const singleChat = chats.find(c => c._id === req.params.id)
+  console.log('first')
   return res.json(singleChat);
 })
 
