@@ -1,0 +1,10 @@
+GET http://localhost:4000/api/user/search?searchQuery=a HTTP/1.1
+content-type: application/json
+
+{
+    "name": "eaoustoeu",
+    "email": "mrw58901aou878@gmail.com",
+    "password": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+
+ 

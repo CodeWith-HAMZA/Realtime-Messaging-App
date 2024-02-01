@@ -1,5 +1,9 @@
 'use client'
+import { registerUser } from '@/app/actions/user.action';
+import { TaskAbortError } from '@reduxjs/toolkit';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { Toaster, toast } from 'sonner';
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState('');
@@ -10,37 +14,67 @@ const SignUp = () => {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const router = useRouter()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Create FormData object from the form element
     const formData = new FormData(e.target);
+    console.log(formData)
 
-    // Convert FormData to a plain object
-    const formDataObject = {};
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
+    // Extract form field values from the formData object
+    const firstName = formData.get('firstName')?.toString();
+    const lastName = formData.get('lastName')?.toString();
+    const email = formData.get('email')?.toString();
+    const password = formData.get('password')?.toString();
+    const confirmPassword = formData.get('confirmPassword')?.toString();
+    const dob = formData.get('dob')?.toString();
+    const gender = formData.get('gender')?.toString();
+    const termsAccepted = formData.get('termsAccepted')?.toString();
 
-    // Log all the state variables
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    console.log('Date of Birth:', dob);
-    console.log('Gender:', gender);
-    console.log('Terms Accepted:', termsAccepted);
- 
-    console.log('Form Data:', formDataObject);
+    // Perform form validation
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !dob || !gender || !termsAccepted) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
 
-    // Perform further form submission logic here
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 8) {
+      toast.error('Password should be at least 8 characters long');
+      return;
+    }
+
+    // Validate password and confirmPassword match
+    if (password !== confirmPassword) {
+      toast.error('Password and Confirm Password do not match');
+      return;
+    }
+
+    // All form validation passed, call registerUser function
+    const res = await registerUser(firstName + lastName, email, password);
+
+    const msg = res.data.message;
+   
+  if (res.serverRes.status === 200 || res.serverRes.status === 201) {
+    toast.success(msg);
+  } else {
+    toast.error(msg);
+  }
+    // router.push('/')
   };
+
 
 
   return (
     <div className="mx-auto max-w-sm space-y-6">
+      <button onClick={() => { toast("first") }}>Shaikh</button>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
@@ -55,6 +89,7 @@ const SignUp = () => {
               type="text"
               id="first-name"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              name='firstName'
               placeholder="Lee"
               required
               value={firstName}
@@ -68,6 +103,7 @@ const SignUp = () => {
             <input
               type="text"
               id="last-name"
+              name='lastName'
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Robinson"
               required
@@ -83,6 +119,7 @@ const SignUp = () => {
           <input
             type="email"
             id="email"
+            name='email'
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="m@example.com"
             required
@@ -97,6 +134,7 @@ const SignUp = () => {
           <input
             type="password"
             id="password"
+            name='password'
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             required
             value={password}
@@ -109,6 +147,7 @@ const SignUp = () => {
           </label>
           <input
             type="password"
+            name='confirmPassword'
             id="confirm-password"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             required
@@ -123,6 +162,7 @@ const SignUp = () => {
           <input
             type="date"
             id="dob"
+            name='dob'
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             required
             value={dob}
@@ -136,6 +176,7 @@ const SignUp = () => {
           <select
             id="gender"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            name='gender'
             onChange={(e) => setGender(e.target.value)}
             value={gender}
           >
@@ -149,10 +190,9 @@ const SignUp = () => {
         <div className="space-y-2">
           <label htmlFor="terms" className="text-sm font-medium leading-none flex items-center">
             <input
-              type="checkbox" 
-
+              type="checkbox"
+              name='termsAccepted'
               aria-required={termsAccepted}
-
 
 
               className="h-4 w-4 text-black bg-black"

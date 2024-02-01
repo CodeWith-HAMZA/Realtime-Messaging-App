@@ -1,15 +1,23 @@
 'use client'
+import { loginUser } from '@/app/actions/user.action';
+import { useUser } from '@/app/context/UserProvider';
 import React, { useState } from 'react';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const user = useUser()
 
-  const handleLogin = () => {
-    // Perform login logic with username and password
-    console.log('Logging in with:', { username, password });
+  const handleLogin = async () => {
+    // Perform login logic with email and password
+    console.log('Logging in with:', { email, password });
+    const url = 'http://localhost:4000/api/user/login';
 
-    // Add your login logic here, e.g., send credentials to a server, validate, etc.
+      const res = await loginUser(email, password)
+      console.log(res)
+
+
+    
   };
 
   return (
@@ -17,16 +25,16 @@ const Login = () => {
       <div className="w-96 bg-white p-8 rounded-md shadow-md mt-10">
         <h1 className="text-3xl font-bold mb-4">Login</h1>
         <div className="mb-4">
-          <label htmlFor="username" className="text-sm font-medium leading-none">
-            Username
+          <label htmlFor="email" className="text-sm font-medium leading-none">
+            Email
           </label>
           <input
             type="text"
-            id="username"
-            name="username"
+            id="email"
+            name="email"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="mb-4">

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const User = require('../models/user.model');
 const { authenticateToken } = require('../middleware');
+const { generateToken } = require('../utils');
 const router = express.Router();
 
 // Import User model
@@ -30,15 +31,19 @@ router.post('/register', async (req, res) => {
         const token = generateToken({ userId: savedUser._id });
 
 
-        res.status(201).json({ user: savedUser, token });
+        res.status(201).json({ user: savedUser, token, message: "Successfully Account Created" });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
+
+
 // User login
 router.post('/login', async (req, res) => {
     try {
+
+
         // Get user credentials from request body
         const { email, password } = req.body;
 
@@ -62,7 +67,7 @@ router.post('/login', async (req, res) => {
         const token = generateToken({ userId: user._id });
 
 
-        res.status(200).json({ user, token });
+        return res.status(200).json({ user, token });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -87,7 +92,7 @@ router.patch('/profile', async (req, res) => {
 });
 
 // Delete user account
-router.delete('/account', authenticateToken, async (req, res) => {
+router.delete('/account', async (req, res) => {
     try {
         // Get user ID from request
         const userId = req.user.id;
@@ -100,5 +105,46 @@ router.delete('/account', authenticateToken, async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+
+
+// Assuming you have already imported necessary modules and models
+
+// Controller function to find all users
+router.get('/', async (req, res) => {
+
+    try {
+        const users = await User.find(); // Assuming User is the Mongoose model for users
+        return res.status(200).json(users);
+    } catch (error) {
+        console.error('Error:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+// searchQuery?keyworad
+router.get('/search', async (req, res) => {
+
+    try {
+        const keyword = req.query.searchQuery ? {
+            $or: [
+                { name: { $regex: req.query.searchQuery, $options: "i" } },
+                { email: { $regex: req.query.searchQuery, $options: "i" } },
+            ]
+        } : {};
+
+        const users = await User.find({ ...keyword, _id: { $ne: '65bb9b4a7bbd46e454576b71' } });
+        return res.status(200).json({ users })
+
+
+    } catch (error) {
+        console.error('Error:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+
 
 module.exports = router;

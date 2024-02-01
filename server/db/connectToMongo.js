@@ -9,7 +9,8 @@ const connectToDB = async () => {
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-      }
+        dbName: "Chat-App-Socket"
+      }, 
     );
     console.log(`"Connected to MongoDB"`  );
   } catch (error) {

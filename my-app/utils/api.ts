@@ -1,24 +1,21 @@
- 
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-interface RequestOptions {
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+export interface ApiRequestOptions extends RequestInit {
     method: HttpMethod;
     headers?: HeadersInit;
-    body?: BodyInit;
+    body?: BodyInit | null
 }
 
-export async function hit(url: string, options: RequestOptions = { method: "GET"}) {
+export async function hit(url: string, options: ApiRequestOptions = { method: "GET" }) {
     try {
         const response = await fetch(url, options);
 
-        if (!response.ok) {
-            throw new Error('Request failed');
-        }
 
         const data = await response.json();
-        return data;
-    } catch (error) {
+        return { data, serverRes: response };
+    } catch (error: any) {
         console.error('Error:', error.message);
         throw error;
     }
