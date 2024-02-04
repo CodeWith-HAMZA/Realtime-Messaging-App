@@ -1,0 +1,30 @@
+### Register ### 
+POST http://localhost:4000/api/user/register  
+content-type: application/json
+{
+    "name": "codeonlinesource1",
+    "email": "codeonlinesource1@gmail.com",
+    "password": "11111111"
+}
+ 
+### Login ###
+POST http://localhost:4000/api/user/login  
+content-type: application/json
+
+{ 
+    "email": "codeonlinesource1@gmail.com",
+    "password": "11111111"
+}
+
+### Searching Users ###
+GET http://localhost:4000/api/user/search?searchQuery=  
+content-type: application/json
+token : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{ 
+    "email": "codeonlinesource1@gmail.com",
+    "password": "11111111"
+}
+ 
+# user-2 codeonlinesource1@gmail.com 
+#  {"user":{"name":"codeonlinesource1","email":"codeonlinesource1@gmail.com","password":"$2b$10$gnZ9mRcQfY34zLAb4xyjVeOd9pgpVNlxpNtGlq1RAV6hUEM70bQhK","_id":"65bcecf20bbe301555a7cbad","createdAt":"2024-02-02T13:24:02.015Z","updatedAt":"2024-02-02T13:24:02.015Z","__v":0},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY4ODAyNDIsImV4cCI6MTcwNjg4Mzg0Mn0.IYy-0-A0v1f1y_-QeKOhMI2pAHwZxqIDuzMidLShBmk","message":"Successfully Account Created"}

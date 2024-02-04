@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, ReactNode, useContext } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useState, ReactNode, useContext, useEffect } from 'react';
 import { Toaster } from 'sonner';
 
 interface User {
@@ -32,10 +33,33 @@ interface UserProviderProps {
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User>({
-        isLoggedIn: false,
+        isLoggedIn: true,
         name: '',
         email: '',
     });
+    const pathname = usePathname()
+    const r = useRouter()
+    // useEffect(() => {
+
+    //     const userInfo = localStorage.getItem('user-info');
+    //     const token = localStorage.getItem('token');
+
+    //     // * If Token found, pushing user towards chat route and updating state with user's info, 
+    //     // if not, pushing user to /register and emptying the state 
+    //     if (userInfo && token) {
+
+    //         const { name, email } = JSON.parse(userInfo);
+    //         login(name, email);
+    //         r.push('/chat')
+    //     } else {
+
+    //         logout()
+
+    //         r.push('/login')
+
+    //     }
+    // }, []);
+
 
     const login = (name: string, email: string) => {
         setUser({

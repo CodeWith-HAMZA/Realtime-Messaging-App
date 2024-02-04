@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
         const savedUser = await newUser.save();
 
         // Generate JWT token
-        const token = generateToken({ userId: savedUser._id });
+        const token = await generateToken({ userId: savedUser._id });
 
 
         res.status(201).json({ user: savedUser, token, message: "Successfully Account Created" });
@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Generate JWT token 
-        const token = generateToken({ userId: user._id });
+        const token = await generateToken({ userId: user._id });
 
 
         return res.status(200).json({ user, token });
@@ -123,8 +123,9 @@ router.get('/', async (req, res) => {
 
 
 // searchQuery?keyworad
-router.get('/search', async (req, res) => {
+router.get('/search', authenticateToken, async (req, res) => {
 
+    const currentUser = req.user._id
     try {
         const keyword = req.query.searchQuery ? {
             $or: [
@@ -133,7 +134,7 @@ router.get('/search', async (req, res) => {
             ]
         } : {};
 
-        const users = await User.find({ ...keyword, _id: { $ne: '65bb9b4a7bbd46e454576b71' } });
+        const users = await User.find({ ...keyword, _id: { $ne: currentUser } });
         return res.status(200).json({ users })
 
 

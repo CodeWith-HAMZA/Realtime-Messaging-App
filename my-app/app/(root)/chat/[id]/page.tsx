@@ -8,10 +8,10 @@ export default async function page({ params }: PageProps) {
 
     const chatId: string = params.id;
 
-    const chatDetails: Chat = await hit('http:localhost:4000/api/chat/' + chatId, { method: "GET" });
-    console.log("first")
+    const chatDetails  = await hit('http:localhost:4000/api/chat/' + chatId, { method: "GET" });
+  
 
     return (
-        <Chat chatDetails={chatDetails} />
+        <Chat chatDetails={chatDetails.data} />
     )
 }

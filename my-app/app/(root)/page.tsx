@@ -1,9 +1,8 @@
 import Chat from "@/components/Chat";
-import ChatRoom from "@/components/ChatRoom";
-import Image from "next/image";
-
+import Link from "next/link";
+ 
 export default function Home() {
   return (
-    <Chat />
+ <Link href={"/chat"}>Goto Chat</Link>
   );
 }

@@ -1,0 +1,91 @@
+### all chat-list for the current-User ###
+GET http://localhost:4000/api/chat/all
+content-type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+
+
+### all group-chat-list for the current-User ###
+GET http://localhost:4000/api/chat/group-chats
+content-type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+
+
+### rename group-chat ###
+
+PUT  http://localhost:4000/api/chat/rename
+content-type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "newName": "Hello oooo",
+  "groupId": "65bd17590ad7c7ae7dd09e49"
+}
+
+
+### chat-details between one-to-one users ###
+POST http://localhost:4000/api/chat/access-chat
+content-type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "otherUserId": "65bcebd3739325c14f1be349"
+}
+
+
+### Group ###
+POST http://localhost:4000/api/chat/group
+content-type: application/json
+token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "chatName": "myGroup",
+  "users": [
+  "65bb978bc7e89891cf693e6b",
+  "65bb97ebc7e89891cf693e6e",
+  "65bb982dc7e89891cf693e71",
+  "65bb9883c7e89891cf693e74",
+  "65bb98a8c7e89891cf693e77",
+  "65bb9b4a7bbd46e454576b71",
+  "65bceb6020ad6de5aa3a7497",
+  "65bcebd3739325c14f1be349"
+]
+
+}
+ 
+
+### Add user to a group ###
+PUT http://localhost:4000/api/chat/group/add
+Content-Type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "groupId": "65bd17590ad7c7ae7dd09e49",
+  "userId": "65bb978bc7e89891cf693e6b"
+}
+
+### Remove user from a group ###
+PUT http://localhost:4000/api/chat/group/remove
+Content-Type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "groupId": "65bd17590ad7c7ae7dd09e49",
+  "userId": "65bb978bc7e89891cf693e6b"
+}
+
+### Make user admin of a group ###
+PUT http://localhost:4000/api/chat/group/make-admin
+Content-Type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDY5NDAyNzcsImV4cCI6MTcwOTUzMjI3N30.-doVgLsQTtAFGYDaFej3njQAKF6etqQFtqrXKY5AI0g
+
+{
+  "groupId": "65bd17590ad7c7ae7dd09e49",
+  "userId": "65bb978bc7e89891cf693e6b"
+}
+ 
+# -current-user codeonline
+# -other-user codewithhmz
+
+ 

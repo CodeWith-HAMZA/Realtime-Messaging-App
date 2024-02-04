@@ -17,16 +17,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="font-sans bg-gray-100 h-screen flex">
-          <UserProvider>
+        <UserProvider>
+          <main className="font-sans bg-gray-100 h-screen flex">
             <Sidebar />
             {children}
-          </UserProvider>
 
-        </main>
+          </main>
+        </UserProvider>
       </body>
     </html>
   );

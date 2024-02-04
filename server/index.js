@@ -6,6 +6,7 @@ const cors = require("cors");
 const ws = require("ws");
 const chats = require("./data");
 const userRoutes = require("./routes/user.route")
+const chatRoutes = require("./routes/chat.route")
 
 const app = express();
 const server = http.createServer(app);
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use('/api/user', userRoutes)
+app.use('/api/chat', chatRoutes)
 app.get("/", (req, res) => {
   return res.json({ success: true });
 });

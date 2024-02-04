@@ -1,6 +1,8 @@
 'use client'
 import { loginUser } from '@/app/actions/user.action';
 import { useUser } from '@/app/context/UserProvider';
+import { Button } from '@/components/ui/button';
+import { removeCookie, setCookie } from '@/lib/utils';
 import React, { useState } from 'react';
 
 const Login = () => {
@@ -13,11 +15,9 @@ const Login = () => {
     console.log('Logging in with:', { email, password });
     const url = 'http://localhost:4000/api/user/login';
 
-      const res = await loginUser(email, password)
-      console.log(res)
-
-
-    
+    // const res = await loginUser(email, password)
+    // console.log(res)
+    removeCookie("token");
   };
 
   return (
@@ -50,12 +50,17 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+
+        <Button
+          className='w-full '
           onClick={handleLogin}
         >
           Login
-        </button>
+        </Button>
+        or
+        <Button variant={"link"}>
+          Signup
+        </Button>
       </div>
     </div>
   );
