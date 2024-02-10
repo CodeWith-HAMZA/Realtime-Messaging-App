@@ -1,4 +1,4 @@
-
+'use client'
 import React from 'react'
 import {
     Drawer,
@@ -20,8 +20,8 @@ export default function AllUsers() {
         <>
 
             <Drawer>
-                <DrawerTrigger>
-                    <Button className='w-full'>New</Button>
+                <DrawerTrigger className='text-white bg-black hover:bg-opacity-80 w-full px-3 py-2 rounded-md  bg-opacity-90 transition-all'>
+                    New Chat
                 </DrawerTrigger>
                 <DrawerContent>
                     <DrawerHeader>

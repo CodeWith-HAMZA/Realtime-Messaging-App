@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-// const isAuthenticated = true
+const isAuthenticated = true
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")
 
-  const isAuthenticated = !!token
+  // const isAuthenticated = !!token
 
   if (!isAuthenticated) {
     console.log("behn chood pehly login karly")

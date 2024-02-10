@@ -21,3 +21,4 @@ export async function hit(url: string, options: ApiRequestOptions = { method: "G
         throw error;
     }
 }
+

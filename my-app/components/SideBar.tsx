@@ -27,14 +27,15 @@ const Sidebar = () => {
 
   return (
 
-    <aside className={`bg-white relative ${!Toggle? "w-[31%]": "w-0"}`}>
+    <aside className={`bg-white relative ${!Toggle ? "w-1/4" : "w-0"}`}>
       <div onClick={() => setToggle(_ => !_)} className="bg-black w-4 h-4 rounded-full absolute -right-2.5 top-1/2 cursor-pointer hover:h-7 hover:top-[49%] transition-all"></div>
 
-      <div className={`flex flex-col h-full w-full max-w-xs `} >
+      <div className={`flex flex-col h-full w-full `} >
         <div className="p-4">
           {!Toggle &&
-            <div className="flex gap-1 flex-col">  <Input className={`  w-full`} placeholder="Search contacts..." />
-              <AllUsers />            </div>
+            <div className="flex gap-1 flex-col">  <Input className={`w-full`} placeholder="Search contacts..." />
+              <AllUsers />
+            </div>
           }
         </div>
         <div className="flex-1 overflow-y-auto">

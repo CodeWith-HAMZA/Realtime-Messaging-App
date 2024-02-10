@@ -25,7 +25,6 @@ export default function RootLayout({
           <main className="font-sans bg-gray-100 h-screen flex">
             <Sidebar />
             {children}
-
           </main>
         </UserProvider>
       </body>

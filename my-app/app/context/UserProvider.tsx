@@ -1,4 +1,5 @@
 'use client'
+import { removeCookie, setCookie } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState, ReactNode, useContext, useEffect } from 'react';
 import { Toaster } from 'sonner';
@@ -61,12 +62,13 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // }, []);
 
 
-    const login = (name: string, email: string) => {
+    const login = (name: string, email: string, token: string = '') => {
         setUser({
             isLoggedIn: true,
             name,
             email,
         });
+        setCookie('token', token, 1);
     };
 
     const logout = () => {
@@ -75,6 +77,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             name: '',
             email: '',
         });
+        removeCookie('token');
     };
 
     const updateUser = (name: string, email: string) => {
@@ -83,6 +86,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             name,
             email,
         }));
+        
     };
 
     return (
