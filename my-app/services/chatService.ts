@@ -31,7 +31,7 @@ class ChatService {
     try {
       const response = await axiosInstance.get("/api/chat/all", {
         headers: {
-          Authorization: `${this.token}`,
+          token: this.token,
         },
       });
       return response.data;
