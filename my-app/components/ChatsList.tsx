@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import UserContact from './cards/UserCard';
+import UserContact from './cards/ChatCard';
 import { Chat } from '@/utils/types';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/app/context/UserProvider';

@@ -15,7 +15,6 @@ export default async function page({ params }: PageProps) {
 
     } catch (error) {
 
-        redirect('/login');
     }
 
 

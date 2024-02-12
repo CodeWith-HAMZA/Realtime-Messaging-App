@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 // Middleware function to authenticate JWT token
 exports.authenticateToken = async (req, res, next) => {
     // Get the token from the request headers, query string, or cookies
-    const token = req.headers?.authorization || req.headers?.token || req.cookies?.token;
-
+    const token = req.headers?.Authorization || req.headers?.token || req.cookies?.token;
+    console.log(token, 'tokne agaya cclient sy')
 
     if (!token) {
         return res.status(401).json({ message: 'Authentication token not found' });

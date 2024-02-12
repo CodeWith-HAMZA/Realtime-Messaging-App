@@ -1,7 +1,4 @@
-export interface User {
-    name: string;
-    email: string;
-}
+
 
 export interface Chat {
     isGroupChat: boolean;
@@ -9,4 +6,11 @@ export interface Chat {
     _id: string;
     chatName: string;
     groupAdmin?: User;
+}
+
+export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    profile: string; 
 }

@@ -1,23 +1,31 @@
-import { Chat } from '@/utils/types';
-import React from 'react';
 
-interface UserContactProps {
-  chat: Chat;
+import React from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { User } from '@/utils/types';
+
+interface UserCardProps {
+    readonly user: User;
+    readonly status: string;
+
 }
 
-const UserContact: React.FC<UserContactProps> = ({ chat }) => {
-  return (
-    <li className="mb-2 flex items-center">
-      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-      <span className="text-gray-800 hover:text-blue-500 cursor-pointer">
-        <div>
-          {chat.chatName}
-          {chat.isGroupChat ? "(Group)" : '(Private-Chat)'}
+const UserCard: React.FC<UserCardProps> = ({ status, user }) => {
+    return (
+        <div className="flex items-center gap-4 ">
+            <Avatar className="h-9 w-9">
+                <AvatarImage alt="@johndoe" src="/placeholder-avatar.jpg" />
+                <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0 ">
+                <span className='text-xs text-green-700' >(Online)</span>
+                <h2 className="text-sm font-medium truncate">{user.name}</h2>
+
+
+                <p className="text-sm text-gray-500 truncate">{user.email}</p>
+
+            </div>
         </div>
-        <span>users: {chat.users.length}</span>
-      </span>
-    </li>
-  );
+    );
 };
 
-export default UserContact;
+export default UserCard;

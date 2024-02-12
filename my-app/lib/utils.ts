@@ -32,3 +32,11 @@ export function getCookie(name: string, cookie: string): string | null {
 
   return null;
 }   
+
+export function truncateString(inputString:string):string {
+  if (inputString.length <= 8) {
+    return inputString;
+  } else {
+    return inputString.slice(0, 8) + '...';
+  }
+}

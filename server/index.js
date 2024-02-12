@@ -21,8 +21,11 @@ app.use(
   })
 );
 
-app.use('/api/user', userRoutes)
-app.use('/api/chat', chatRoutes)
+app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
+
+
+// * demo-routes
 app.get("/", (req, res) => {
   return res.json({ success: true });
 });

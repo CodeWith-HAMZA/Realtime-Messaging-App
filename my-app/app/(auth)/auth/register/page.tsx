@@ -1,10 +1,13 @@
 'use client'
-import { registerUser } from '@/app/actions/user.action';
+import { Button } from '@/components/ui/button';
+import { setCookie } from '@/lib/utils';
+import UserService from '@/services/userServices';
 import { TaskAbortError } from '@reduxjs/toolkit';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Toaster, toast } from 'sonner';
-
+import { useCookies } from "react-cookie"
+import { useUser } from '@/app/context/UserProvider';
 const SignUp = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -14,13 +17,15 @@ const SignUp = () => {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [Loading, setLoading] = useState(false)
   const router = useRouter()
+  const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
 
+  const user = useUser()
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Create FormData object from the form element
     const formData = new FormData(e.target);
-    console.log(formData)
 
     // Extract form field values from the formData object
     const firstName = formData.get('firstName')?.toString();
@@ -31,6 +36,7 @@ const SignUp = () => {
     const dob = formData.get('dob')?.toString();
     const gender = formData.get('gender')?.toString();
     const termsAccepted = formData.get('termsAccepted')?.toString();
+
 
     // Perform form validation
     if (!firstName || !lastName || !email || !password || !confirmPassword || !dob || !gender || !termsAccepted) {
@@ -57,17 +63,30 @@ const SignUp = () => {
       return;
     }
 
-    // All form validation passed, call registerUser function
-    const res = await registerUser(firstName + lastName, email, password);
+    const userServices = new UserService(cookies?.Authorization);
 
-    const msg = res.data.message;
-   
-  if (res.serverRes.status === 200 || res.serverRes.status === 201) {
-    toast.success(msg);
-  } else {
-    toast.error(msg);
-  }
-    // router.push('/')
+    setLoading(true)
+
+    try {
+      // Call the registerUser function from the service
+      const data = await userServices.register(`${firstName} ${lastName}`, email, password);
+
+      toast.success(data.message ?? "Successfully account created");
+
+
+      setCookie("Authorization", data?.token, { path: "/" });
+      user.login(data.user.name, data.user.email)
+
+
+      router.push("/chat");
+
+
+    } catch (error) {
+      console.error(error)
+      toast.error("Error while registering")
+    } finally {
+      setLoading(false)
+    }
   };
 
 
@@ -202,12 +221,13 @@ const SignUp = () => {
             <span className="ml-2">I accept the terms and conditions</span>
           </label>
         </div>
-        <button
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+        <Button
+          className='w-full'
           type="submit"
+          disabled={Loading}
         >
           Sign Up
-        </button>
+        </Button>
       </form>
     </div>
   );

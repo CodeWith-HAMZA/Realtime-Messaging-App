@@ -1,20 +1,27 @@
 'use client'
 import { removeCookie, setCookie } from '@/lib/utils';
+import UserService from '@/services/userServices';
+import axios from 'axios';
+import { Island_Moments } from 'next/font/google';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState, ReactNode, useContext, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { Toaster } from 'sonner';
 
 interface User {
     isLoggedIn: boolean;
     name: string;
     email: string;
+    token?: string
 }
 
 interface UserContextProps {
     user: User;
-    login: (name: string, email: string) => void;
+    login: (name: string, email: string, token: string) => void;
     logout: () => void;
     updateUser: (name: string, email: string) => void;
+    getAuthCookie: () => string;
+
 }
 
 export const UserContext = React.createContext<UserContextProps>({
@@ -26,59 +33,55 @@ export const UserContext = React.createContext<UserContextProps>({
     login: () => { },
     logout: () => { },
     updateUser: () => { },
+    getAuthCookie: () => ''
+
+
+
 });
 
 interface UserProviderProps {
     children: ReactNode;
+    data: object
 }
 
-const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+const UserProvider: React.FC<UserProviderProps> = ({ children, ...t }) => {
+
     const [user, setUser] = useState<User>({
-        isLoggedIn: true,
+        isLoggedIn: false,
         name: '',
         email: '',
+        token: ''
     });
-    const pathname = usePathname()
-    const r = useRouter()
-    // useEffect(() => {
+    const [cookies, setCookie, removeCookie] = useCookies(["Authorization"]);
+    const router = useRouter()
 
-    //     const userInfo = localStorage.getItem('user-info');
-    //     const token = localStorage.getItem('token');
-
-    //     // * If Token found, pushing user towards chat route and updating state with user's info, 
-    //     // if not, pushing user to /register and emptying the state 
-    //     if (userInfo && token) {
-
-    //         const { name, email } = JSON.parse(userInfo);
-    //         login(name, email);
-    //         r.push('/chat')
-    //     } else {
-
-    //         logout()
-
-    //         r.push('/login')
-
-    //     }
-    // }, []);
-
+    const getAuthCookie = () => {
+        return cookies["Authorization"]
+    }
 
     const login = (name: string, email: string, token: string = '') => {
+        setCookie("Authorization", token, { path: "/" });
         setUser({
             isLoggedIn: true,
             name,
             email,
+            token
         });
-        setCookie('token', token, 1);
+        router.push('/chat')
     };
 
+
+
     const logout = () => {
+        removeCookie("Authorization")
+        router.push("/auth/login")
         setUser({
             isLoggedIn: false,
             name: '',
             email: '',
         });
-        removeCookie('token');
     };
+
 
     const updateUser = (name: string, email: string) => {
         setUser((prevUser) => ({
@@ -86,11 +89,10 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             name,
             email,
         }));
-        
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, updateUser }}>
+        <UserContext.Provider value={{ getAuthCookie, user, login, logout, updateUser, }}>
             <Toaster />
             {children}
         </UserContext.Provider>

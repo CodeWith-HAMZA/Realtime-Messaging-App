@@ -31,9 +31,9 @@ router.post('/register', async (req, res) => {
         const token = await generateToken({ userId: savedUser._id });
 
 
-        res.status(201).json({ user: savedUser, token, message: "Successfully Account Created" });
+        return res.status(201).json({ user: savedUser, token, message: "Successfully Account Created" });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        return res.status(400).json({ message: error.message });
     }
 });
 
@@ -146,6 +146,36 @@ router.get('/search', authenticateToken, async (req, res) => {
 
 
 
+router.get('/check-auth', authenticateToken, async (req, res) => {
 
+    // If the execution reaches this point, it means the user is authorized
+    const user = await User.findById(req.user._id);
+    // console.log(user)
+    if (!user) {
+        return res.status(400).json({ message: 'Token Is Tempored' });
+    }
+    return res.status(200).json({ message: 'User is authorized', user });
+});
+
+// Route to get user profile data
+router.get('/profile', authenticateToken, async (req, res) => {
+    try {
+        // Get user ID from request (assuming you have authentication middleware)
+        const userId = req.user._id;
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return user profile data
+        return res.status(200).json({user });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 module.exports = router;
