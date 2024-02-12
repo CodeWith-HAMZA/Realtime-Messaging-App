@@ -1,10 +1,10 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { User } from "@/utils/interfaces/user";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
-
 
 export function setCookie(name: string, value: string, days: number): void {
   const expirationDate = new Date();
@@ -29,14 +29,17 @@ export function getCookie(name: string, cookie: string): string | null {
     }
   }
 
-
   return null;
-}   
+}
 
-export function truncateString(inputString:string):string {
+export function truncateString(inputString: string): string {
   if (inputString.length <= 8) {
     return inputString;
   } else {
-    return inputString.slice(0, 8) + '...';
+    return inputString.slice(0, 8) + "...";
   }
 }
+
+export const getSender = (currentUser: User, users: User[]) => {
+  return users[0]._id === currentUser._id ? users[1].name : users[0].name;
+};

@@ -5,6 +5,7 @@ import { StoreProvider } from "../providers";
 import UserProvider from "../context/UserProvider";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ThemeProvider } from "../context/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,35 +19,31 @@ export default async function AuthLayout({
   ...props
 }: {
   children: React.ReactNode;
-
 }) {
   // console.log(props)
   // console.log(cookies().get("Authorization"), 'user auth hun mein ')
 
+  const res = await fetch("http://localhost:4000/api/user/check-auth", {
+    headers: { token: cookies().get("Authorization")?.value },
+  });
 
-  const res = await fetch("http://localhost:4000/api/user/check-auth", { headers: { token: cookies().get("Authorization")?.value } });
-
-  const isAuthenticated = res.ok
+  const isAuthenticated = res.ok;
 
   if (isAuthenticated) {
-     // redirect("/chat")
+    // redirect("/chat")
   } else {
     // redirect("/auht/login")
   }
 
-
-
   return (
-
-    <html lang="en">
-      <body className={inter.className}>
-        <main>
-          <UserProvider data={await res.json()} >
-            {children}
-          </UserProvider>
-
-        </main>
-      </body>
-    </html>
+    <ThemeProvider>
+      <html lang="en" className="">
+        <body className={inter.className}>
+          <main>
+            <UserProvider data={await res.json()}>{children}</UserProvider>
+          </main>
+        </body>
+      </html>
+    </ThemeProvider>
   );
 }

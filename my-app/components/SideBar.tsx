@@ -64,7 +64,7 @@ const Sidebar = () => {
               : Chats.map((chat) => {
                   const { users } = chat;
                   return (
-                    <Link href={chat._id}>
+                    <Link href={"/chat/" + chat._id}>
                       <UserCard
                         className={
                           pathname === "/chat/" + chat._id
