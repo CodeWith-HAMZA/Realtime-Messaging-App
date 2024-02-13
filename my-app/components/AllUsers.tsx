@@ -13,7 +13,7 @@ import { truncateString } from "@/lib/utils";
 import ChatService from "@/services/chatService";
 import { toast } from "sonner";
 import Chat from "@/utils/interfaces/chat";
-import { skeleton } from "@/utils/constants";
+import { UserSkeleton } from "@/utils/constants";
 
 interface AllUsersProps {}
 
@@ -66,19 +66,17 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
 
   let content =
     Loading === "FetchingUsers" ? (
-      skeleton(4)
+      <UserSkeleton n={5} />
     ) : Users.length ? (
       Users.map((user) => (
         <div
-          key={user._id} // Assuming each user has a unique identifier
+          key={user._id}
           onClick={() => {
             addToSelectedUsers(user);
           }}
         >
           <UserCard
-            className={
-                isUserSelected(user) ? "ring-1 bg-gray-300" : ""
-            }
+            className={isUserSelected(user) ? "ring-1 bg-gray-300" : ""}
             status="Online"
             user={user}
           />
@@ -92,21 +90,33 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
     );
 
   async function createNewChat() {
-    console.log("create chat");
     const chatService = new ChatService(getAuthCookie());
 
     if (SelectedUsers.length === 1) {
+      const [selectedSingleUser] = SelectedUsers;
+
       setLoading("ChatCreation");
-      const data = await chatService.accessChat(SelectedUsers[0]._id || "");
+      const data = await chatService.accessChat(selectedSingleUser._id || "");
       setLoading("");
       const { message, chat } = data as { message: string; chat: Chat };
       console.log(data);
       toast.success(message);
 
       setChat(chat);
+
+      // * If Chat is already created
       if (!Chats.find((c) => c._id === chat._id)) {
         setChats((chats) => [chat, ...chats]);
       }
+    } else if (SelectedUsers.length >= 2) {
+      // * But If Two or more users are selected, then create a group-chat, with current logged-in-user
+      console.log(SelectedUsers);
+
+      const data = await chatService.createGroupChat(
+        "",
+        SelectedUsers.map((u) => u._id)
+      );
+      const { message, groupChat } = data;
     }
   }
   return (

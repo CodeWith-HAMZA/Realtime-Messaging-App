@@ -103,7 +103,10 @@ router.route("/group").post(authenticateToken, async function (req, res) {
     if (existingGroup) {
       return res
         .status(400)
-        .json({ message: "Group chat with the same name already exists" });
+        .json({
+          message: "Group chat with the same name already exists",
+          groupChat: existingGroup,
+        });
     }
 
     // Create a new group chat instance
@@ -125,7 +128,7 @@ router.route("/group").post(authenticateToken, async function (req, res) {
 
     return res.status(201).json({
       groupChat: populatedGroupChat,
-      message: "successfully created group",
+      message: "Successfully Created Group-Chat",
     });
   } catch (error) {
     console.error("Error:", error);

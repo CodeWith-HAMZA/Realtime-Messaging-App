@@ -10,9 +10,10 @@ import { useUser } from "@/app/context/UserProvider";
 import UserCard from "./cards/UserCard";
 import ChatService from "@/services/chatService";
 import Chat from "@/utils/interfaces/chat";
-import { skeleton } from "@/utils/constants";
+import { UserSkeleton } from "@/utils/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 interface Contact {
   id: number;
@@ -59,24 +60,26 @@ const Sidebar = () => {
             Recent Conversations
           </h3>
           <div className="divide-y pt-2 flex-col flex">
-            {Loading
-              ? skeleton(9)
-              : Chats.map((chat) => {
-                  const { users } = chat;
-                  return (
-                    <Link href={"/chat/" + chat._id}>
-                      <UserCard
-                        className={
-                          pathname === "/chat/" + chat._id
-                            ? "ring-0 bg-gray-300"
-                            : ""
-                        }
-                        status="Online"
-                        user={users.at(1)}
-                      />
-                    </Link>
-                  );
-                })}
+            {Loading ? (
+              <UserSkeleton n={6} />
+            ) : (
+              Chats.map((chat) => {
+                const { users } = chat;
+                return (
+                  <Link href={"/chat/" + chat._id}>
+                    <UserCard
+                      className={
+                        pathname === "/chat/" + chat._id
+                          ? "ring-0 bg-gray-300"
+                          : ""
+                      }
+                      status="Online"
+                      user={users.at(1)}
+                    />
+                  </Link>
+                );
+              })
+            )}
           </div>
           <h3 className="px-4 py-2 mt-4 font-semibold text-gray-500 dark:text-gray-400">
             Contacts

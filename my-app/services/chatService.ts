@@ -75,6 +75,27 @@ class ChatService {
       throw error;
     }
   }
+  async createGroupChat(chatName: string, users: string[]) {
+    try {
+      const response = await axiosInstance.post(
+        "/api/chat/group",
+        {
+          chatName,
+          users,
+        },
+        {
+          headers: {
+            token: this.token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating group chat:", error);
+      throw error;
+    }
+  }
 }
 
 export default ChatService;

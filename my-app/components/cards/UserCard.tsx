@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "@/utils/interfaces/user";
 
 interface UserCardProps {
-  readonly user: User;
+  readonly user?: User;
   readonly status: string;
   readonly className: string;
 }
@@ -11,7 +11,7 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ status, user, className }) => {
   return (
     <div
-      className={`px-4 m-0.5 cursor-pointer py-2 hover:bg-opacity-70 dark:hover:bg-opacity-70 active:bg-gray-300 dark:active:bg-gray-600 ring-black rounded-md transition-all border-t ${className}`}
+      className={`px-4 m-0.5 cursor-pointer py-2 hover:bg-opacity-70 dark:hover:bg-opacity-70 active:bg-gray-200 dark:active:bg-gray-200 ring-black rounded-md transition-all border-t ${className}`}
     >
       <div className="flex items-center gap-4 ">
         <Avatar className="h-9 w-9">
@@ -22,11 +22,11 @@ const UserCard: React.FC<UserCardProps> = ({ status, user, className }) => {
           <span className="text-xs text-green-700 dark:text-green-400">
             (Online)
           </span>
-          <h2 className="text-sm font-medium truncate dark:text-500 text-gray-500">
-            {user.name}
+          <h2 className="text-sm font-semibold truncate dark:text-500 text-gray-600 dark:text-gray-100">
+            {user?.name}
           </h2>
           <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-            {user.email}
+            {user?.email}
           </p>
         </div>
       </div>
