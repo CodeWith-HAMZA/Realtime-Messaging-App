@@ -4,7 +4,7 @@ import { useUser } from "@/app/context/UserProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { removeCookie, setCookie } from "@/lib/utils";
+import { removeCookie, setCookie, setLocalStorageItem } from "@/lib/utils";
 import UserService from "@/services/userServices";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,6 +35,9 @@ const Login = () => {
     console.log(data.token);
 
     user.login(data.user.name, data.user.email, data?.token as string);
+    setLocalStorageItem("user", data);
+    
+
     setLoading(false);
   };
 

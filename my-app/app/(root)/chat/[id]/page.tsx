@@ -1,17 +1,36 @@
-import { PageProps } from "@/.next/types/app/(root)/page";
-import Chat from "@/components/Chat";
-import UserService from "@/services/userServices";
-import { hit } from "@/utils/api";
+import { useUser } from "@/app/context/UserProvider";
+import ChatDetails from "@/components/ChatDetails";
+import ChatService from "@/services/chatService";
+import MessageService from "@/services/messageService";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
 import React from "react";
+import { ImSpinner8 } from "react-icons/im";
 
-export default async function page({ params }: PageProps) {
-  const chatId: string = params.id;
-  let chatDetails; 
-  const userServices = new UserService(cookies().get("Authorization")?.value);
-  const res = await userServices.getProfile();
-  console.log(res);
+export default async function page({ params }) {
+  const chatId = params.id;
 
-  return <Chat chatDetails={null} userData={res.user} />;
+  const messageService = new MessageService(
+    cookies()?.get("Authorization")?.value as string
+  );
+  const chatService = new ChatService(
+    cookies()?.get("Authorization")?.value as string
+  );
+
+  try {
+    const data = await chatService.getChatById(chatId);
+
+    const messagesData = await messageService.getMessagesForChat(chatId);
+    console.log(data);
+    return data && messagesData ? (
+      <ChatDetails chatDetails={data} messagesData={messagesData} />
+    ) : (
+      <div className="flex justify-center items-center w-[80%]">
+        <ImSpinner8 className=" animate-spin" size={100} />
+      </div>
+    );
+  } catch (error) {
+    redirect("/auth/login");
+  }
 }

@@ -20,17 +20,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const res = await fetch("http://localhost:4000/api/user/check-auth", {
-    headers: { token: cookies().get("Authorization")?.value },
-  });
-
-  const isAuthenticated = res.ok;
-
   return (
     <ThemeProvider>
       <html lang="en">
         <body className={inter.className}>
-          <UserProvider data={await res.json()}>
+          <UserProvider>
             <main className="font-sans bg-gray-100 h-screen flex">
               <Sidebar />
               {children}

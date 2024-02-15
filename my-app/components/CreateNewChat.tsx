@@ -18,15 +18,16 @@ import { cookies } from "next/headers";
 import { useUser } from "@/app/context/UserProvider";
 import { Skeleton } from "./ui/skeleton";
 import UserCard from "./cards/UserCard";
-import { User } from "@/utils/types";
+import { User } from "@/utils/interfaces/user";
 import AllUsers from "./AllUsers";
-
+import { MdAdd } from "react-icons/md";
 export default function CreateNewChat() {
   return (
     <>
       <Drawer>
-        <DrawerTrigger className="text-white bg-black hover:bg-opacity-80 w-full px-3 py-2 rounded-md  bg-opacity-90 transition-all">
-          New Chat
+        <DrawerTrigger className="flex justify-center gap-1 items-center  text-white bg-black hover:bg-opacity-80 w-full px-3 py-2 rounded-md  bg-opacity-90 transition-all">
+          <span className="">New Chat</span>
+          <MdAdd size={20} />
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>

@@ -14,6 +14,7 @@ import ChatService from "@/services/chatService";
 import { toast } from "sonner";
 import Chat from "@/utils/interfaces/chat";
 import { UserSkeleton } from "@/utils/constants";
+import { groupCollapsed } from "console";
 
 interface AllUsersProps {}
 
@@ -45,10 +46,7 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
     setLoading("");
     setUsers(users);
   }, 400);
-  useEffect(() => {
-    fetchUsers();
-    console.log("fetched users");
-  }, [Query]);
+  useEffect(fetchUsers, [Query]);
 
   function removeUserFromSelection(user: User) {
     setSelectedUsers((_) => _.filter((_) => _._id !== user._id));
@@ -77,7 +75,6 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
         >
           <UserCard
             className={isUserSelected(user) ? "ring-1 bg-gray-300" : ""}
-            status="Online"
             user={user}
           />
         </div>
@@ -89,7 +86,9 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
       </p>
     );
 
-  async function createNewChat() {
+  async function createNewChat(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
     const chatService = new ChatService(getAuthCookie());
 
     if (SelectedUsers.length === 1) {
@@ -110,19 +109,29 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
       }
     } else if (SelectedUsers.length >= 2) {
       // * But If Two or more users are selected, then create a group-chat, with current logged-in-user
-      console.log(SelectedUsers);
-
+      console.log(SelectedUsers, "create group-chat");
+      const formData = new FormData(e.currentTarget);
+      const groupName = formData.get("group-name")?.toString();
+      console.log(groupName);
+      if (!groupName) {
+        toast.error("Oops! Looks like you missed entering a group name!");
+        return;
+      }
+      setLoading("ChatCreation");
       const data = await chatService.createGroupChat(
-        "",
+        groupName,
         SelectedUsers.map((u) => u._id)
       );
+      setLoading("ChatCreation");
       const { message, groupChat } = data;
+      toast.success(message);
+      console.log(groupChat);
     }
   }
   return (
     <>
       <div className="px-4 py-2">
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex items-center flex-wrap gap-2 mb-3">
           {SelectedUsers.map((user) => (
             <div className="flex gap-2 border-2 border-gray-300 shadow-sm rounded-full px-4 pb-1 hover:bg-gray-100 cursor-pointer ">
               <span>{truncateString(user.name)}</span>{" "}
@@ -135,6 +144,9 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
               </span>
             </div>
           ))}
+          <span className="text-xs text-gray-500">
+            {SelectedUsers.length > 1 ? SelectedUsers.length + 1 + " Members including (You)" : ""} 
+          </span>
         </div>
         <Input
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,15 +158,27 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
       </div>
       <div className="flex-1 overflow-y-auto">
         <div className="px-4 py-2">
-          <h2 className="text-lg font-semibold">Contacts</h2>
+          <h2 className="text-lg font-semibold">Chat With Globals Users:</h2>
+          <p className="text-xs text-gray-500">
+            Select Any User And Start Chatting!
+          </p>
         </div>
         <div className="h-[30vh] overflow-y-scroll flex flex-col gap-1">
           {content}
         </div>
       </div>
-      <div className="px-4 flex py-2 gap-2 border-t">
+      <form
+        onSubmit={createNewChat}
+        className="flex flex-col px-4  py-3 gap-2 border-t"
+      >
+        {SelectedUsers.length > 1 && (
+          <Input
+            name="group-name"
+            className="ring-black ring-1"
+            placeholder="Your Group Name"
+          />
+        )}
         <Button
-          onClick={createNewChat}
           disabled={!SelectedUsers.length || Loading === "ChatCreation"}
           className="w-full"
         >
@@ -170,7 +194,7 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
             </div>
           )}
         </Button>
-      </div>
+      </form>
     </>
   );
 };

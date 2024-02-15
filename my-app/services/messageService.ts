@@ -1,45 +1,45 @@
-import axiosInstance from './index';
-import Cookies from 'js-cookie';
+import axiosInstance from "./index";
 
-class MessageService {
-    private token: string | undefined;
+export default class MessageService {
+  private token: string;
 
-    constructor() {
-        this.token = Cookies.get('token');
-    }
+  
+  constructor(token: string) {
+    this.token = token;
+  }
 
-    async sendMessage(chatId: string, content: string) {
-        try {
-            const response = await axiosInstance.post('/api/message/send', {
-                chatId,
-                content,
-            }, {
-                headers: {
-                    Authorization: `${this.token}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error sending message:', error);
-            throw error;
+  async createMessage(chatId: string, content: string) {
+    try {
+      const response = await axiosInstance.post(
+        "/api/message",
+        {
+          chatId,
+          content,
+        },
+        {
+          headers: {
+            token: this.token,
+          },
         }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating message:", error);
+      throw error;
     }
+  }
 
-    async getMessages(chatId: string) {
-        try {
-            const response = await axiosInstance.get(`/api/message/${chatId}`, {
-                headers: {
-                    Authorization: `${this.token}`,
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching messages:', error);
-            throw error;
-        }
+  async getMessagesForChat(chatId: string) {
+    try {
+      const response = await axiosInstance.get(`/api/message/${chatId}`, {
+        headers: {
+          token: this.token,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting messages:", error);
+      throw error;
     }
-
-    // Add more methods for other message-related API endpoints as needed
+  }
 }
-
-export default MessageService;

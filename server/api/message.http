@@ -1,0 +1,14 @@
+### Create Message
+POST http://localhost:4000/api/message/
+Content-Type: application/json
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDc5MTMwMzMsImV4cCI6MTcxMDUwNTAzM30.fVQDnVMAJX1BqlUL8FmXK1LTVxJH_rcjiPSXeFUFOFE
+
+{
+  "chatId": "65cb7b85c6af2db72839e85d",
+  "senderId": "65bcecf20bbe301555a7cbad",
+  "content": "Hello, this is a test message. to hello feeraands group"
+}
+
+### Get Messages for a Particular Chat
+GET http://localhost:4000/api/message/65cb7b85c6af2db72839e85d
+token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWJjZWNmMjBiYmUzMDE1NTVhN2NiYWQiLCJpYXQiOjE3MDc5MTMwMzMsImV4cCI6MTcxMDUwNTAzM30.fVQDnVMAJX1BqlUL8FmXK1LTVxJH_rcjiPSXeFUFOFE

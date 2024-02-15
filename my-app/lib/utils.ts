@@ -32,14 +32,55 @@ export function getCookie(name: string, cookie: string): string | null {
   return null;
 }
 
-export function truncateString(inputString: string): string {
-  if (inputString.length <= 8) {
+export function truncateString(
+  inputString: string,
+  charLimit: number,
+  endingString: string
+): string {
+  if (inputString.length <= charLimit) {
     return inputString;
   } else {
-    return inputString.slice(0, 8) + "...";
+    return inputString.slice(0, charLimit) + endingString;
   }
 }
 
 export const getSender = (currentUser: User, users: User[]) => {
   return users[0]._id === currentUser._id ? users[1].name : users[0].name;
 };
+
+// Utility function to set data in local storage
+export const setLocalStorageItem = <T extends User>(key: string, value: T) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error("Error setting local storage item:", error);
+  }
+};
+
+// Utility function to get data from local storage
+export const getLocalStorageItem = <T extends { user: User } | null>(
+  key: "user" | string
+): T => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : null;
+  } catch (error) {
+    console.error("Error getting local storage item:", error);
+    return null as T;
+  }
+};
+
+export function isCurrentUserSender(senderId: string) {
+  const currentUser = getLocalStorageItem("user");
+  console.log(currentUser?.user._id, senderId);
+
+  return currentUser?.user._id === senderId;
+}
+
+export function getOtherUser(users: User[]) {
+  console.log("first");
+  let currentUserId = "seaut";
+  const data = getLocalStorageItem("user");
+  const currentUser = data?.user._id;
+  return currentUser === users[0]._id ? users[1] : users[0];
+}

@@ -101,12 +101,10 @@ router.route("/group").post(authenticateToken, async function (req, res) {
     const existingGroup = await Chat.findOne({ chatName, isGroupChat: true });
 
     if (existingGroup) {
-      return res
-        .status(400)
-        .json({
-          message: "Group chat with the same name already exists",
-          groupChat: existingGroup,
-        });
+      return res.status(400).json({
+        message: "Group chat with the same name already exists",
+        groupChat: existingGroup,
+      });
     }
 
     // Create a new group chat instance
@@ -336,5 +334,26 @@ router
         .json({ message: "Failed to promote user to admin" });
     }
   });
+
+// Route to get a single chat by ID
+router.get("/:id", authenticateToken, async (req, res) => {
+  try {
+    const chatId = req.params.id;
+    // Fetch chat from the database using the provided ID
+    const chat = await Chat.findById(chatId)
+      .populate("users", "_id name email")
+      .populate("groupAdmin", "_id name email ");
+    if (!chat) {
+      // If chat with the provided ID is not found, return 404 Not Found
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    // If chat is found, return it in the response
+    res.json(chat);
+  } catch (error) {
+    // If there's an error, return 500 Internal Server Error
+    console.error("Error fetching chat:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 module.exports = router;

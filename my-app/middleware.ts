@@ -11,9 +11,10 @@ const authRoutes = ['/auth/login', '/auth/', '/login', '/register', '/auth/regis
 const protectedRoutes = ["/settings"]; // Define the protected routes
 
 export default async function middleware(req: NextRequest) {
-  const res = await fetch("http://localhost:4000/api/user/check-auth", { headers: { token: req.cookies.get("Authorization")?.value } });
+  const res = await fetch("http://localhost:4000/api/user/check-auth", { headers: { token: req.cookies?.get("Authorization")?.value } });
 
   const isAuthenticated = res.ok
+  console.log(await res.json(), req.cookies?.get("Authorization")?.value, 'isauth')
  
 
   if (!isAuthenticated) {

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import axiosInstance from "./index";
 
 class ChatService {
@@ -93,6 +94,20 @@ class ChatService {
       return response.data;
     } catch (error) {
       console.error("Error creating group chat:", error);
+      throw error;
+    }
+  }
+  async getChatById(chatId: string) {
+    try {
+      const response = await axiosInstance.get("/api/chat/" + chatId, {
+        headers: {
+          token: this.token,
+        },
+      });
+      return response.data;
+    } catch (error) {   
+      console.error("Error accessing chat:", error);
+
       throw error;
     }
   }

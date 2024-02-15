@@ -14,17 +14,15 @@ import { UserSkeleton } from "@/utils/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
-
-interface Contact {
-  id: number;
-  name: string;
-}
+import { useRouter } from "next/navigation";
+import { getOtherUser } from "@/lib/utils";
 
 const Sidebar = () => {
   const [Toggle, setToggle] = useState(false);
-  const { Chats, setChats, getAuthCookie } = useUser();
+  const { Chats, setChats, getAuthCookie, setChat } = useUser();
   const [Loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const r = useRouter();
   const chatService = new ChatService(getAuthCookie());
   useEffect(() => {
     setLoading(true);
@@ -35,7 +33,11 @@ const Sidebar = () => {
       setLoading(false);
     });
   }, []);
+  function handleSelectChat(chat: Chat) {
+    // setChat(chat);
 
+    r.push(`/chat/${chat._id}`);
+  }
   return (
     <aside
       className={`bg-white relative shadow-sm ${!Toggle ? "w-1/4" : "w-0"}`}
@@ -61,22 +63,27 @@ const Sidebar = () => {
           </h3>
           <div className="divide-y pt-2 flex-col flex">
             {Loading ? (
-              <UserSkeleton n={6} />
+              <>
+               <UserSkeleton n={7} />
+              </>
             ) : (
               Chats.map((chat) => {
                 const { users } = chat;
                 return (
-                  <Link href={"/chat/" + chat._id}>
+                  <div onClick={() => handleSelectChat(chat)}>
                     <UserCard
+                      chat={chat}
                       className={
                         pathname === "/chat/" + chat._id
                           ? "ring-0 bg-gray-300"
                           : ""
                       }
-                      status="Online"
-                      user={users.at(1)}
+                      chatType={
+                        chat?.isGroupChat ? "Group-Chat" : "Private-Chat"
+                      }
+                      user={getOtherUser(users)}
                     />
-                  </Link>
+                  </div>
                 );
               })
             )}

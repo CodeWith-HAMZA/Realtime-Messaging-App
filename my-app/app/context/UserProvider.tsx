@@ -1,5 +1,5 @@
 "use client";
-import { removeCookie, setCookie } from "@/lib/utils";
+import { removeCookie, setCookie, setLocalStorageItem } from "@/lib/utils";
 import UserService from "@/services/userServices";
 import Chat from "@/utils/interfaces/chat";
 import axios from "axios";
@@ -46,10 +46,9 @@ export const UserContext = React.createContext<UserContextProps>({
 
 interface UserProviderProps {
   children: ReactNode;
-  data: object;
 }
 
-const UserProvider: React.FC<UserProviderProps> = ({ children, ...t }) => {
+const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>({
     isLoggedIn: false,
     name: "",
@@ -67,6 +66,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children, ...t }) => {
 
   const login = (name: string, email: string, token: string = "") => {
     setCookie("Authorization", token, { path: "/" });
+
     setUser({
       isLoggedIn: true,
       name,
@@ -77,6 +77,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children, ...t }) => {
   };
 
   const logout = () => {
+    console.log(getAuthCookie());
     removeCookie("Authorization");
     router.push("/auth/login");
     setUser({
