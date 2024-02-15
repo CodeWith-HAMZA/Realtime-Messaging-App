@@ -21,7 +21,7 @@ export default function MessageCard({
         <span
           className={`text-sm py-2  text-gray-800 rounded-2xl ${
             isSender
-              ? "rounded-tr-none bg-black text-white"
+              ? "rounded-tr-none bg-black  text-white"
               : " bg-gray-300 rounded-tl-none"
           } px-4`}
         >

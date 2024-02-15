@@ -2,16 +2,19 @@ const express = require("express");
 const http = require("http");
 const connectToDB = require("./db/connectToMongo");
 const cors = require("cors");
-const ws = require("ws");
 const userRoutes = require("./routes/user.route");
 const chatRoutes = require("./routes/chat.route");
 const messageRoutes = require("./routes/message.route");
 const { Server } = require("socket.io");
+
 class ChatApp {
   constructor(port) {
     this.app = express();
     this.server = http.createServer(this.app);
-    this.io = new Server(this.server, { cors: { origin: "*" } }); // Enable CORS
+    this.io = new Server(this.server, {
+      cors: { origin: "*" },
+      pingTimeout: 50 * 1000, // 50 secs
+    }); // Enable CORS
 
     this.connectToDatabase();
     this.configureMiddlewares();
@@ -45,8 +48,21 @@ class ChatApp {
       // socket.join() would join room (implement room logic as needed)
       console.log("A user connected with " + socket.id);
 
+      socket.on("setup", (userData) => {
+        socket.join(userData._id);
+        console.log(userData);
+        socket.emit("connected");
+      });
+
+      socket.on("joinChatRoom", (chatRoomData) => {
+        socket.join(chatRoomData);
+      });
       // Handle socket events (e.g., chat messages, join/leave rooms)
-      // ...
+      socket.on("disconnect", () => {
+        console.log(`User ${socket.id} disconnected`);
+        // You can perform cleanup actions here, like removing the user from rooms
+        // or updating their online status, if applicable.
+      });
     });
   }
 
@@ -58,4 +74,4 @@ class ChatApp {
 }
 
 // Initialize and run the ChatApp instance
-const app = new ChatApp(process.env.PORT || 4000);
+module.exports = app = new ChatApp(process.env.PORT || 4000);

@@ -84,3 +84,7 @@ export function getOtherUser(users: User[]) {
   const currentUser = data?.user._id;
   return currentUser === users[0]._id ? users[1] : users[0];
 }
+
+export function getCurrentUser() {
+  return getLocalStorageItem("user");
+}

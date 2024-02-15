@@ -340,7 +340,7 @@ router.get("/:id", authenticateToken, async (req, res) => {
   try {
     const chatId = req.params.id;
     // Fetch chat from the database using the provided ID
-    const chat = await Chat.findById(chatId)
+    const chat = await Chat.findById(chatId.toString())
       .populate("users", "_id name email")
       .populate("groupAdmin", "_id name email ");
     if (!chat) {
@@ -348,7 +348,7 @@ router.get("/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "Chat not found" });
     }
     // If chat is found, return it in the response
-    res.json(chat);
+    return res.json(chat);
   } catch (error) {
     // If there's an error, return 500 Internal Server Error
     console.error("Error fetching chat:", error);

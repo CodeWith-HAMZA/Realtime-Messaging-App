@@ -1,34 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import MessagesList from "./MessageList";
 import Chat from "@/utils/interfaces/chat";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import {
-  ArrowBigLeftIcon,
-  ArrowLeft,
-  ArrowLeftCircle,
-  ArrowLeftFromLine,
-  ArrowLeftIcon,
-  HomeIcon,
-  LogOutIcon,
-  SettingsIcon,
-  UserCircle,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
+
+import { ArrowLeftIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { useUser } from "@/app/context/UserProvider";
-import { Switch } from "./ui/switch";
 import { useTheme } from "@/app/context/ThemeProvider";
 import { IoMdExit, IoMdMore } from "react-icons/io";
-import { User } from "@/utils/interfaces/user";
 import {
   Dialog,
   DialogContent,
@@ -40,32 +20,44 @@ import {
 import UserCard from "./cards/UserCard";
 import DropdownMenuComponent from "./shared/DropDownComponent";
 import {
-  getCookie,
-  isCurrentUserReceiver,
+  getCurrentUser,
+  getLocalStorageItem,
+  getUser,
   isCurrentUserSender,
   truncateString,
 } from "@/lib/utils";
-import { MdAdminPanelSettings, MdHome } from "react-icons/md";
-import { HiHome } from "react-icons/hi2";
+
 import Link from "next/link";
-import { FaLeftLong } from "react-icons/fa6";
 import MessageCard from "./cards/MessageCard";
 import { Message } from "@/utils/interfaces/message";
 import MessageService from "@/services/messageService";
-  import { ImSpinner8 } from "react-icons/im";
+import { socket } from "@/utils/socket";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
 }
 
+var mySocket, selectedChatCompare;
+
 const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
   const { logout } = useUser();
   const { darkMode, toggleTheme } = useTheme();
-  const [RenameText, setRenameText] = useState(
+  const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
   const [MessageText, setMessageText] = useState("");
   const { getAuthCookie } = useUser();
+  const [SocketConnection, setSocketConnection] = useState(false);
+
+  useEffect(() => {
+    mySocket = socket;
+    console.log(mySocket, "socket");
+    mySocket.emit("setup", getCurrentUser());
+    mySocket.on("connection", () => {
+      setSocketConnection(true);
+    });
+  }, []);
+
   const handleSendMessage = () => {
     const messageService = new MessageService(getAuthCookie());
     messageService
@@ -77,7 +69,8 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
         console.log("error occured while sending message", err);
       });
   };
-   return (
+
+  return (
     <div className="flex-grow p-4 ">
       <div className="flex flex-col h-screen">
         <header className="flex h-14 items-center justify-between gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
