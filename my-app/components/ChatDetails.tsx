@@ -56,32 +56,41 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
   useEffect(() => {
     mySocket = socket;
     console.log(mySocket, "socket");
-    mySocket.emit("setup", getCurrentUser());
-    mySocket.on("connected", () => {
-      setSocketConnection(true);
-    });
+    // mySocket.emit("setup", getCurrentUser());
+    // mySocket.on("connected", () => {
+    //   setSocketConnection(true);
+    // });
 
     mySocket.emit("joinChatRoom", chatDetails);
     console.log(selectedChatCompare, Chat, " before");
     selectedChatCompare = Chat;
     console.log(selectedChatCompare, Chat, "afetr");
 
-    mySocket.on("messageReceived", (data) => {
-      // setMessages((_) => [..._, JSON.parse(JSON.stringify(data))]);
-
-      console.log(JSON.parse(JSON.stringify(data)), "message Received");
-    });
   }, [Chat]);
+
+
+  useEffect(
+    function () {
+
+      socket.on('messageReceived', (data) => {
+        setMessages((_) => [..._, JSON.parse(JSON.stringify(data?.message))]);
+      })
+      return () => {
+        socket.off('messageReceived');
+      };
+    }, []
+  )
+
 
   const handleSendMessage = () => {
     const messageService = new MessageService(getAuthCookie());
-
+    let message = {
+      content: MessageText,
+      sender: getCurrentUser()?.user || {},
+      chat: chatDetails as Chat,
+    }
     socket.emit("newMessage", {
-      message: {
-        content: MessageText,
-        sender: getCurrentUser()?.user || {},
-        chat: chatDetails as Chat,
-      },
+      message,
       chat: chatDetails as Chat,
     });
 
@@ -202,17 +211,17 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
                                       text: isUserAnAdmin
                                         ? "Exit Group"
                                         : "Remove " +
-                                          truncateString(_.email, 8, "..."),
+                                        truncateString(_.email, 8, "..."),
                                       icon: <IoMdExit size={20} />,
                                     },
                                     // @ts-ignore
                                     {
                                       ...(!isUserAnAdmin
                                         ? {
-                                            type: "item",
-                                            text: "Make Admin",
-                                            icon: <UserIcon size={20} />,
-                                          }
+                                          type: "item",
+                                          text: "Make Admin",
+                                          icon: <UserIcon size={20} />,
+                                        }
                                         : null),
                                     },
                                   ]}
@@ -234,12 +243,11 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
           <div className="space-y-4">
             {Messages &&
               Messages?.map((m) => (
-                <p>{m.content}</p>
-                // <MessageCard
-                //   sender={m.sender.email}
-                //   message={m.content}
-                //   isSender={isCurrentUserSender(m.sender._id)}
-                // />
+                <MessageCard
+                  sender={m.sender.email}
+                  message={m.content}
+                  isSender={isCurrentUserSender(m.sender._id)}
+                />
               ))}
           </div>
         </div>
