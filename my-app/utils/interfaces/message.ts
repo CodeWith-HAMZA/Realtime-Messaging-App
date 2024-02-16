@@ -3,9 +3,9 @@ import { User } from "./user";
 
 export interface Message {
   _id: string;
-  chat: Chat; // Assuming chat is of type Chat
-  sender: User; // Assuming sender is of type User
+  chat: Chat;
+  sender: User;
   content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

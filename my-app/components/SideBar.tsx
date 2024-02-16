@@ -34,8 +34,7 @@ const Sidebar = () => {
     });
   }, []);
   function handleSelectChat(chat: Chat) {
-    // setChat(chat);
-
+    setChat(chat);
     r.push(`/chat/${chat._id}`);
   }
   return (
@@ -64,7 +63,7 @@ const Sidebar = () => {
           <div className="divide-y pt-2 flex-col flex">
             {Loading ? (
               <>
-               <UserSkeleton n={7} />
+                <UserSkeleton n={7} />
               </>
             ) : (
               Chats.map((chat) => {

@@ -32,12 +32,13 @@ import MessageCard from "./cards/MessageCard";
 import { Message } from "@/utils/interfaces/message";
 import MessageService from "@/services/messageService";
 import { socket } from "@/utils/socket";
+import { Socket } from "socket.io-client";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
 }
 
-var mySocket, selectedChatCompare;
+var mySocket: Socket, selectedChatCompare;
 
 const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
   const { logout } = useUser();
@@ -45,7 +46,10 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
+  const { Chat, setChat } = useUser();
   const [MessageText, setMessageText] = useState("");
+  const [Messages, setMessages] = useState<Message[] | []>(messagesData);
+  const [demo, setDemo] = useState([]);
   const { getAuthCookie } = useUser();
   const [SocketConnection, setSocketConnection] = useState(false);
 
@@ -53,16 +57,39 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
     mySocket = socket;
     console.log(mySocket, "socket");
     mySocket.emit("setup", getCurrentUser());
-    mySocket.on("connection", () => {
+    mySocket.on("connected", () => {
       setSocketConnection(true);
     });
-  }, []);
+
+    mySocket.emit("joinChatRoom", chatDetails);
+    console.log(selectedChatCompare, Chat, " before");
+    selectedChatCompare = Chat;
+    console.log(selectedChatCompare, Chat, "afetr");
+
+    mySocket.on("messageReceived", (data) => {
+      // setMessages((_) => [..._, JSON.parse(JSON.stringify(data))]);
+
+      console.log(JSON.parse(JSON.stringify(data)), "message Received");
+    });
+  }, [Chat]);
 
   const handleSendMessage = () => {
     const messageService = new MessageService(getAuthCookie());
+
+    socket.emit("newMessage", {
+      message: {
+        content: MessageText,
+        sender: getCurrentUser()?.user || {},
+        chat: chatDetails as Chat,
+      },
+      chat: chatDetails as Chat,
+    });
+
     messageService
       .createMessage(chatDetails?._id, MessageText)
       .then((_) => {
+        // setMessages((_) => [..._, message]);
+
         console.log("message sent successfuly");
       })
       .catch((err: unknown) => {
@@ -205,13 +232,15 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
 
         <div className="flex-1 overflow-auto p-4 md:p-6">
           <div className="space-y-4">
-            {messagesData.map((m) => (
-              <MessageCard
-                sender={m.sender.email}
-                message={m.content}
-                isSender={isCurrentUserSender(m.sender._id)}
-              />
-            ))}
+            {Messages &&
+              Messages?.map((m) => (
+                <p>{m.content}</p>
+                // <MessageCard
+                //   sender={m.sender.email}
+                //   message={m.content}
+                //   isSender={isCurrentUserSender(m.sender._id)}
+                // />
+              ))}
           </div>
         </div>
         {chatDetails && (

@@ -48,14 +48,24 @@ class ChatApp {
       // socket.join() would join room (implement room logic as needed)
       console.log("A user connected with " + socket.id);
 
+      // * Setting the user to the room, & emmiting the 'connected' event
       socket.on("setup", (userData) => {
         socket.join(userData._id);
         console.log(userData);
+
         socket.emit("connected");
       });
 
+      // * joining the user to the chat room, when we click any of the chat on the client-side
+
       socket.on("joinChatRoom", (chatRoomData) => {
-        socket.join(chatRoomData);
+        // Using Chat-Id as room's unique-name
+        const chatId = chatRoomData._id;
+
+        socket.join(chatId);
+
+        // * according to me from chatgpt, chatRoomData there must be the roomId, through which the current socket will be joined in the room
+        console.log("Joined The Chat Room, with chat-id " + chatRoomData._id);
       });
       // Handle socket events (e.g., chat messages, join/leave rooms)
       socket.on("disconnect", () => {
@@ -63,6 +73,13 @@ class ChatApp {
         // You can perform cleanup actions here, like removing the user from rooms
         // or updating their online status, if applicable.
       });
+
+      socket.on("newMessage", ({ message, chat }) => {
+        // Broadcast the message to all sockets in the room
+        // io.to(roomId).emit("message", message);
+        socket.to(chat._id).emit("messageReceived", { message, chat });
+      });
+      // Server-side code
     });
   }
 
