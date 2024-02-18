@@ -22,7 +22,6 @@ import DropdownMenuComponent from "./shared/DropDownComponent";
 import {
   getCurrentUser,
   getLocalStorageItem,
-  getUser,
   isCurrentUserSender,
   truncateString,
 } from "@/lib/utils";
