@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Chat from "@/utils/interfaces/chat";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -21,7 +21,6 @@ import UserCard from "./cards/UserCard";
 import DropdownMenuComponent from "./shared/DropDownComponent";
 import {
   getCurrentUser,
-  getLocalStorageItem,
   isCurrentUserSender,
   truncateString,
 } from "@/lib/utils";
@@ -32,6 +31,7 @@ import { Message } from "@/utils/interfaces/message";
 import MessageService from "@/services/messageService";
 import { socket } from "@/utils/socket";
 import { Socket } from "socket.io-client";
+import { toast } from "sonner";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
@@ -39,39 +39,48 @@ interface ChatProps {
 
 var mySocket: Socket, selectedChatCompare;
 
-const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
+
+const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }: ChatProps) => {
   const { logout } = useUser();
   const { darkMode, toggleTheme } = useTheme();
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const { Chat, setChat } = useUser();
   const [MessageText, setMessageText] = useState("");
-  const [Messages, setMessages] = useState<Message[] | []>(messagesData);
-  const [demo, setDemo] = useState([]);
+  const [Messages, setMessages] = useState<Message[] | []>(messagesData as Message[]);
   const { getAuthCookie } = useUser();
-  const [SocketConnection, setSocketConnection] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const scrollToBottom = () => {
+
+    if (containerRef.current)
+      containerRef.current?.scrollTo(0, containerRef.current.scrollHeight);
+
+  };
+  const playSound = async () => {
+    await audioRef?.current?.play();
+    console.log("playing")
+  };
+
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [Messages]);
 
   useEffect(() => {
     mySocket = socket;
     console.log(mySocket, "socket");
-    // mySocket.emit("setup", getCurrentUser());
-    // mySocket.on("connected", () => {
-    //   setSocketConnection(true);
-    // });
-
     mySocket.emit("joinChatRoom", chatDetails);
-    console.log(selectedChatCompare, Chat, " before");
-    selectedChatCompare = Chat;
-    console.log(selectedChatCompare, Chat, "afetr");
-
   }, [Chat]);
 
 
   useEffect(
-    function () {
+    () => {
 
       socket.on('messageReceived', (data) => {
+        playSound();
         setMessages((_) => [..._, JSON.parse(JSON.stringify(data?.message))]);
       })
       return () => {
@@ -82,12 +91,20 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
 
 
   const handleSendMessage = () => {
+    const currentUser = getCurrentUser()?.user;
+
     const messageService = new MessageService(getAuthCookie());
-    let message = {
+    if (!currentUser) {
+      // * Show Toast For temporing the logged-in userdata in the localstorage
+      return;
+    }
+
+    let message: Message = {
       content: MessageText,
-      sender: getCurrentUser()?.user || {},
+      sender: currentUser,
       chat: chatDetails as Chat,
     }
+
     socket.emit("newMessage", {
       message,
       chat: chatDetails as Chat,
@@ -96,7 +113,7 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
     messageService
       .createMessage(chatDetails?._id, MessageText)
       .then((_) => {
-        // setMessages((_) => [..._, message]);
+        setMessages((previousMessages: Message[]) => [...previousMessages, message]);
 
         console.log("message sent successfuly");
       })
@@ -107,6 +124,7 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
 
   return (
     <div className="flex-grow p-4 ">
+      <audio ref={audioRef} src="/sound.mp3" />
       <div className="flex flex-col h-screen">
         <header className="flex h-14 items-center justify-between gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
           <div className="flex gap-4">
@@ -238,8 +256,8 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }) => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-4 md:p-6">
-          <div className="space-y-4">
+        <div className="flex-1 overflow-auto p-4 md:p-6" id="p" ref={containerRef}>
+          <div className="space-y-4 " id="p2" >
             {Messages &&
               Messages?.map((m) => (
                 <MessageCard

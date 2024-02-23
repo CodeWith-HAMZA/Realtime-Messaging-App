@@ -8,7 +8,12 @@ const messageRoutes = require("./routes/message.route");
 const { Server } = require("socket.io");
 
 class ChatApp {
+
+  // * connected-Sockets in the application
+  onlineUsers = new Set();
   constructor(port) {
+
+
     this.app = express();
     this.server = http.createServer(this.app);
     this.io = new Server(this.server, {
@@ -48,6 +53,13 @@ class ChatApp {
       // socket.join() would join room (implement room logic as needed)
       console.log("A user connected with " + socket.id);
 
+      // * Keep adding the sockets/client/users, when ever the client/user/socket connects Real-Time Connection to the server
+      this.onlineUsers.add(socket.id);
+
+      // Send updated online users list to all clients
+      this.io.emit('onlineUsers', Array.from(this.onlineUsers));
+
+
       // * Setting the user to the room, & emmiting the 'connected' event
       socket.on("setup", (userData) => {
         socket.join(userData._id);
@@ -67,11 +79,15 @@ class ChatApp {
         // * according to me from chatgpt, chatRoomData there must be the roomId, through which the current socket will be joined in the room
         console.log("Joined The Chat Room, with chat-id " + chatRoomData._id);
       });
-      // Handle socket events (e.g., chat messages, join/leave rooms)
-      socket.on("disconnect", () => {
-        console.log(`User ${socket.id} disconnected`);
-        // You can perform cleanup actions here, like removing the user from rooms
-        // or updating their online status, if applicable.
+
+      socket.on('disconnect', () => {
+        console.log('A user disconnected');
+
+        // Remove user from online users set
+        this.onlineUsers.delete(socket.id);
+
+        // Send updated online users list to all clients
+        this.io.emit('onlineUsers', Array.from(this.onlineUsers));
       });
 
       socket.on("newMessage", ({ message, chat }) => {

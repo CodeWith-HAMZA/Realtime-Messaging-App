@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
 import { getOtherUser } from "@/lib/utils";
+import { socket } from "@/utils/socket";
 
 const Sidebar = () => {
   const [Toggle, setToggle] = useState(false);
@@ -33,6 +34,18 @@ const Sidebar = () => {
       setLoading(false);
     });
   }, []);
+
+
+  useEffect(() => {
+    socket.on('onlineUsers', (users) => {
+      console.log(users, 'users oline')
+    });
+    return () => {
+      socket.off('onlineUsers')
+    }
+  }, []);
+
+
   function handleSelectChat(chat: Chat) {
     setChat(chat);
     r.push(`/chat/${chat._id}`);
@@ -46,7 +59,7 @@ const Sidebar = () => {
         className="bg-black w-4 h-4 rounded-full absolute -right-2.5 top-1/2 cursor-pointer hover:h-7 hover:top-[49%] transition-all"
       ></div>
 
-      <div className={`flex flex-col h-full w-full `}>
+      <div className={`flex flex-col h-full w-full`}>
         <div className="p-4">
           {!Toggle && (
             <div className="flex gap-1 flex-col">
