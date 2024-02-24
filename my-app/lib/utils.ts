@@ -88,3 +88,13 @@ export function getOtherUser(users: User[]) {
 export function getCurrentUser() {
   return getLocalStorageItem("user");
 }
+
+export function millisecondsToDate<T extends string | Date | number>(
+  milliseconds: T
+) {
+  // Create a new Date object with the milliseconds
+  const date = new Date(milliseconds).toLocaleTimeString();
+
+  // Return the date
+  return date;
+}

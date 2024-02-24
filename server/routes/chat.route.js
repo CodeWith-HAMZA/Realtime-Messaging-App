@@ -65,7 +65,11 @@ router.route("/all").get(authenticateToken, async function (req, res) {
     const chats = await Chat.find({ users: { $all: [currentUser] } })
       .populate({ path: "users", select: "name email" }) // Populate 'users' field with 'name' and 'email' properties
       .populate({ path: "groupAdmin", select: "name email" }) // Populate 'admins' field with 'name' and 'email' properties
-      .populate("latestMessage")
+      .populate({
+        path: "latestMessage",
+        select: "content createdAt",
+        populate: { path: "sender", select: "email -_id" },
+      })
       .sort({ updatedAt: "descending" }); // Sort chats from newest to oldest based on 'createdAt' field
 
     return res.json({ chats });
@@ -342,13 +346,18 @@ router.get("/:id", authenticateToken, async (req, res) => {
     // Fetch chat from the database using the provided ID
     const chat = await Chat.findById(chatId.toString())
       .populate("users", "_id name email")
-      .populate("groupAdmin", "_id name email ");
+      .populate("groupAdmin", "_id name email ")
+      .populate({
+        path: "latestMessage",
+        select: "content createdAt",
+        populate: { path: "sender", select: "email -_id" },
+      });
     if (!chat) {
       // If chat with the provided ID is not found, return 404 Not Found
       return res.status(404).json({ message: "Chat not found" });
     }
     // If chat is found, return it in the response
-    return res.json(chat);
+    return res.status(200).json(chat);
   } catch (error) {
     // If there's an error, return 500 Internal Server Error
     console.error("Error fetching chat:", error);

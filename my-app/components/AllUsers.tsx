@@ -134,18 +134,29 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
         <div className="flex items-center flex-wrap gap-2 mb-3">
           {SelectedUsers.map((user) => (
             <div className="flex gap-2 border-2 border-gray-300 shadow-sm rounded-full px-4 pb-1 hover:bg-gray-100 cursor-pointer ">
-              <span>{truncateString(user.name)}</span>{" "}
-              <span
-                className="hover:text-gray-500"
-                onClick={() => removeUserFromSelection(user)}
-              >
-                {" "}
-                x
+              <span>{truncateString(user.name, 18, "...")}</span>{" "}
+              <span className="" onClick={() => removeUserFromSelection(user)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 pt-0.5 text-gray-600 hover:text-red-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
               </span>
             </div>
           ))}
           <span className="text-xs text-gray-500">
-            {SelectedUsers.length > 1 ? SelectedUsers.length + 1 + " Members including (You)" : ""} 
+            {SelectedUsers.length > 1
+              ? SelectedUsers.length + 1 + " Members including (You)"
+              : ""}
           </span>
         </div>
         <Input

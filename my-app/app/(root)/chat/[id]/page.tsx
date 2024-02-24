@@ -22,7 +22,7 @@ export default async function page({ params }) {
     const chatData = await chatService.getChatById(chatId);
 
     const messagesData = await messageService.getMessagesForChat(chatId);
-    console.log(chatData);
+    console.log(chatData, messagesData);
     return chatData && messagesData ? (
       <ChatDetails chatDetails={chatData} messagesData={messagesData} />
     ) : null;

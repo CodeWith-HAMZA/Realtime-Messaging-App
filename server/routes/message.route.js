@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Message = require("../models/message.model");
 const { authenticateToken } = require("../middleware");
+const Chat = require("../models/chat.model");
 
 // Create a new message
 router.post("/", authenticateToken, async (req, res) => {
@@ -12,6 +13,11 @@ router.post("/", authenticateToken, async (req, res) => {
     const message = new Message({ chat: chatId, sender: senderId, content });
     // Save the message to the database
     const savedMessage = await message.save();
+
+    const chat = await Chat.findById(chatId);
+    chat["latestMessage"] = savedMessage._id;
+    await chat.save();
+
     return res.status(201).json(savedMessage);
   } catch (error) {
     console.error("Error creating message:", error);
@@ -24,7 +30,7 @@ router.get("/:chatId", authenticateToken, async (req, res) => {
   try {
     const chatId = req.params.chatId;
     console.log(chatId, "chat aaaaaaaagiaaieutehus");
-    
+
     // Fetch all messages associated with the provided chat ID
     const messages = await Message.find({ chat: chatId })
       .populate("sender", "name email profile") // Populate sender details

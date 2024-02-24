@@ -1,6 +1,9 @@
+import { millisecondsToDate } from "@/lib/utils";
+import { Message } from "@/utils/interfaces/message";
+
 interface MessageProps {
   sender: string;
-  message: string;
+  message: Message;
   isSender: boolean;
 }
 
@@ -25,7 +28,12 @@ export default function MessageCard({
               : " bg-gray-300 rounded-tl-none"
           } px-4`}
         >
-          {message}
+          {message.content}
+        </span>
+        <span
+          className={`text-xs text-gray-400 ${isSender ? "text-right" : ""}`}
+        >
+          {millisecondsToDate(message.createdAt as Date)}
         </span>
       </div>
       {!isSender && <div className="w-4 h-4 rounded-full bg-black" />}

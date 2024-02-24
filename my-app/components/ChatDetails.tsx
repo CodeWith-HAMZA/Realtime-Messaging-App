@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import Chat from "@/utils/interfaces/chat";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -39,58 +39,54 @@ interface ChatProps {
 
 var mySocket: Socket, selectedChatCompare;
 
-
-const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }: ChatProps) => {
-  const { logout } = useUser();
+const ChatDetails: React.FC<ChatProps> = ({
+  chatDetails,
+  messagesData,
+}: ChatProps) => {
+  const { logout, Chat, getAuthCookie } = useUser();
   const { darkMode, toggleTheme } = useTheme();
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { Chat, setChat } = useUser();
   const [MessageText, setMessageText] = useState("");
-  const [Messages, setMessages] = useState<Message[] | []>(messagesData as Message[]);
-  const { getAuthCookie } = useUser();
+  const [Messages, setMessages] = useState<Message[] | []>(
+    messagesData as Message[]
+  );
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const scrollToBottom = () => {
-
     if (containerRef.current)
       containerRef.current?.scrollTo(0, containerRef.current.scrollHeight);
-
   };
   const playSound = async () => {
     await audioRef?.current?.play();
-    console.log("playing")
+    console.log("playing");
   };
 
-
   useEffect(() => {
-    scrollToBottom()
+    console.log(chatDetails, messagesData);
+    scrollToBottom();
   }, [Messages]);
 
   useEffect(() => {
     mySocket = socket;
-    console.log(mySocket, "socket");
-    mySocket.emit("joinChatRoom", chatDetails);
+     mySocket.emit("joinChatRoom", chatDetails);
   }, [Chat]);
 
+  useEffect(() => {
+    socket.on("messageReceived", (data) => {
+      playSound();
+      setMessages((_) => [..._, JSON.parse(JSON.stringify(data?.message))]);
+    });
+    return () => {
+      socket.off("messageReceived");
+    };
+  }, []);
 
-  useEffect(
-    () => {
+  const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      socket.on('messageReceived', (data) => {
-        playSound();
-        setMessages((_) => [..._, JSON.parse(JSON.stringify(data?.message))]);
-      })
-      return () => {
-        socket.off('messageReceived');
-      };
-    }, []
-  )
-
-
-  const handleSendMessage = () => {
     const currentUser = getCurrentUser()?.user;
 
     const messageService = new MessageService(getAuthCookie());
@@ -103,18 +99,21 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }: ChatPro
       content: MessageText,
       sender: currentUser,
       chat: chatDetails as Chat,
-    }
+    };
 
     socket.emit("newMessage", {
       message,
       chat: chatDetails as Chat,
     });
 
+    setMessages((previousMessages: Message[]) => [
+      ...previousMessages,
+      message,
+    ]);
+    setMessageText("");
     messageService
       .createMessage(chatDetails?._id, MessageText)
       .then((_) => {
-        setMessages((previousMessages: Message[]) => [...previousMessages, message]);
-
         console.log("message sent successfuly");
       })
       .catch((err: unknown) => {
@@ -228,17 +227,17 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }: ChatPro
                                       text: isUserAnAdmin
                                         ? "Exit Group"
                                         : "Remove " +
-                                        truncateString(_.email, 8, "..."),
+                                          truncateString(_.email, 8, "..."),
                                       icon: <IoMdExit size={20} />,
                                     },
                                     // @ts-ignore
                                     {
                                       ...(!isUserAnAdmin
                                         ? {
-                                          type: "item",
-                                          text: "Make Admin",
-                                          icon: <UserIcon size={20} />,
-                                        }
+                                            type: "item",
+                                            text: "Make Admin",
+                                            icon: <UserIcon size={20} />,
+                                          }
                                         : null),
                                     },
                                   ]}
@@ -256,28 +255,36 @@ const ChatDetails: React.FC<ChatProps> = ({ chatDetails, messagesData }: ChatPro
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-4 md:p-6" id="p" ref={containerRef}>
-          <div className="space-y-4 " id="p2" >
+        <div
+          className="flex-1 overflow-auto p-4 md:p-6"
+          id="p"
+          ref={containerRef}
+        >
+          <div className="space-y-4 " id="p2">
             {Messages &&
               Messages?.map((m) => (
                 <MessageCard
+                   
                   sender={m.sender.email}
-                  message={m.content}
+                  message={m}
                   isSender={isCurrentUserSender(m.sender._id)}
                 />
               ))}
           </div>
         </div>
         {chatDetails && (
-          <footer className="flex h-14 items-center gap-4 border-t px-6 dark:border-gray-800">
+          <form
+            onSubmit={handleSendMessage}
+            className="flex h-14 items-center gap-4 border-t px-6 dark:border-gray-800"
+          >
             <Input
               value={MessageText}
               onChange={(e) => setMessageText(e.currentTarget.value)}
               className="flex-1"
               placeholder="Type your message"
             />
-            <Button onClick={handleSendMessage}>Send</Button>
-          </footer>
+            <Button>Send</Button>
+          </form>
         )}
       </div>
     </div>
