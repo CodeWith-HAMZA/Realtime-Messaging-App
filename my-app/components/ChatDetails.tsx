@@ -32,6 +32,7 @@ import MessageService from "@/services/messageService";
 import { socket } from "@/utils/socket";
 import { Socket } from "socket.io-client";
 import { toast } from "sonner";
+import Profile from "./Profile";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
@@ -71,7 +72,7 @@ const ChatDetails: React.FC<ChatProps> = ({
 
   useEffect(() => {
     mySocket = socket;
-     mySocket.emit("joinChatRoom", chatDetails);
+    mySocket.emit("joinChatRoom", chatDetails);
   }, [Chat]);
 
   useEffect(() => {
@@ -124,7 +125,7 @@ const ChatDetails: React.FC<ChatProps> = ({
   return (
     <div className="flex-grow p-4 ">
       <audio ref={audioRef} src="/sound.mp3" />
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-full">
         <header className="flex h-14 items-center justify-between gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
           <div className="flex gap-4">
             <Link href={"/chat"}>
@@ -142,22 +143,32 @@ const ChatDetails: React.FC<ChatProps> = ({
             </div>
           </div>
           <div className="flex gap-4">
-            <DropdownMenuComponent
-              triggerText={<UserIcon />}
-              items={[
-                { type: "label", text: "My Account" },
-                { type: "separator" },
-                { type: "item", text: "Profile" },
-                { type: "item", text: darkMode ? "Light Mode" : "Dark Mode" },
-                {
-                  type: "item",
-                  text: "Logout",
-                  onClick: () => logout(),
-                  icon: <LogOutIcon size={18} />,
-                },
-              ]}
-            />
-
+            <Dialog>
+              <DialogTrigger>
+                {" "}
+                <UserIcon
+                  size={26}
+                  className="hover:opacity-60 transition-all"
+                />{" "}
+              </DialogTrigger>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle className="pb-2 font-bold text-3xl text-center">
+                    User Profile
+                  </DialogTitle>
+                  <DialogDescription className="">
+                    {" "}
+                    <Profile
+                      name={getCurrentUser()?.user.name ?? ""}
+                      email={getCurrentUser()?.user.email ?? ""}
+                       
+                       
+                      key={2}
+                    />
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
             <Dialog>
               <DialogTrigger>
                 {" "}
@@ -252,6 +263,9 @@ const ChatDetails: React.FC<ChatProps> = ({
                 </DialogHeader>
               </DialogContent>
             </Dialog>
+            <Button className="rounded-full" onClick={() => logout()}>
+              <LogOutIcon />
+            </Button>
           </div>
         </header>
 
@@ -260,11 +274,10 @@ const ChatDetails: React.FC<ChatProps> = ({
           id="p"
           ref={containerRef}
         >
-          <div className="space-y-4 " id="p2">
+          <div className="space-y-4 messagesContainer"  id="p2">
             {Messages &&
               Messages?.map((m) => (
                 <MessageCard
-                   
                   sender={m.sender.email}
                   message={m}
                   isSender={isCurrentUserSender(m.sender._id)}

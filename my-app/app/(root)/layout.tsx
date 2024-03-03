@@ -25,7 +25,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <UserProvider>
-            <main className="font-sans bg-gray-100 h-screen flex">
+            <main className="font-sans bg-gray-100 h-screen overflow-hidden flex">
               <Sidebar />
               {children}
             </main>

@@ -9,7 +9,7 @@ const connectToDB = async () => {
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        dbName: "Chat-App-Socket",
+        dbName: "CHAT",
       }
     );
   } catch (error) {

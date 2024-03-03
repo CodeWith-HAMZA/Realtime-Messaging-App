@@ -50,13 +50,13 @@ const UserCard: React.FC<UserCardProps> = ({
               <p className="space-x-2 text-gray-500 truncate dark:text-gray-400">
                 <span className="text-sm text-gray-600 font-semibold">
                   {truncateString(
-                    chat?.latestMessage.sender.email,
+                    chat?.latestMessage?.sender?.email ?? "",
                     4,
                     "... :"
                   ) ?? ""}
                 </span>
                 <span className="text-sm">
-                  "{chat?.latestMessage.content ?? ""}"
+                  {chat?.latestMessage?.content ?? ""} 
                 </span>
               </p>
             )}
@@ -65,7 +65,11 @@ const UserCard: React.FC<UserCardProps> = ({
         <div className="space-y-4">
           <p className="text-xs text-green-700">{chatType}</p>
           <p hidden={chatType === null} className="text-neutral-500 text-xs">
-            {millisecondsToDate(chat?.latestMessage.createdAt as Date)}
+            {millisecondsToDate(
+              chat?.latestMessage?.createdAt
+                ? chat?.latestMessage?.createdAt
+                : ""
+            )}
           </p>
         </div>
       </div>

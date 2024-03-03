@@ -1,4 +1,5 @@
 "use client";
+ 
 import { Button } from "@/components/ui/button";
 import { setCookie, setLocalStorageItem } from "@/lib/utils";
 import UserService from "@/services/userServices";
@@ -8,8 +9,11 @@ import React, { useState } from "react";
 import { Toaster, toast } from "sonner";
 import { useCookies } from "react-cookie";
 import { useUser } from "@/app/context/UserProvider";
+import { placeHolderImage } from "@/utils/constants";
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
+  const [imageBase64, setImageBase64] = React.useState(null);
+
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -98,21 +102,45 @@ const SignUp = () => {
     }
   };
 
+  // Function to handle file input change
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageBase64(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="mx-auto max-w-sm space-y-6">
-      <button
-        onClick={() => {
-          toast("first");
-        }}
-      >
-        Shaikh
-      </button>
+    <div className="mx-auto max-w-sm my-8 space-y-6">
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
           <p className="text-gray-500 dark:text-gray-400">
             Enter your information to create an account
           </p>
+        </div>
+        <div className="flex justify-center">
+          <label htmlFor="image" className="text-sm font-medium leading-none">
+            <img
+              src={imageBase64 ?? placeHolderImage}
+              className="w-40 hover:opacity-80 transition-all cursor-pointer hover:scale-95 focus:ring-1 h-40  rounded-full"
+              alt=""
+              srcset=""
+            />
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            className="hidden"
+            required
+            onChange={handleImageChange}
+          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">

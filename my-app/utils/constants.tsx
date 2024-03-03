@@ -18,3 +18,6 @@ export const UserSkeleton: React.FC<UserSkeletonProps> = ({ n }) => (
 function createArray(n: number) {
   return Array.from({ length: n });
 }
+
+
+export const placeHolderImage = 'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'

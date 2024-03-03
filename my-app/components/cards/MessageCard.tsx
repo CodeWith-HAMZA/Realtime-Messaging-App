@@ -33,7 +33,9 @@ export default function MessageCard({
         <span
           className={`text-xs text-gray-400 ${isSender ? "text-right" : ""}`}
         >
-          {millisecondsToDate(message.createdAt as Date)}
+          {  millisecondsToDate(
+            message?.createdAt as Date
+          ) !== "Invalid Date" ? millisecondsToDate(message?.createdAt as Date): "Just Now"}
         </span>
       </div>
       {!isSender && <div className="w-4 h-4 rounded-full bg-black" />}
