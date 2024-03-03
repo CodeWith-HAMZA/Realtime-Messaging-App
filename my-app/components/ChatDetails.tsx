@@ -161,8 +161,7 @@ const ChatDetails: React.FC<ChatProps> = ({
                     <Profile
                       name={getCurrentUser()?.user.name ?? ""}
                       email={getCurrentUser()?.user.email ?? ""}
-                       
-                       
+                      photoUrl={getCurrentUser()?.user.profile ?? ""}
                       key={2}
                     />
                   </DialogDescription>
@@ -274,7 +273,7 @@ const ChatDetails: React.FC<ChatProps> = ({
           id="p"
           ref={containerRef}
         >
-          <div className="space-y-4 messagesContainer"  id="p2">
+          <div className="space-y-4 messagesContainer" id="p2">
             {Messages &&
               Messages?.map((m) => (
                 <MessageCard

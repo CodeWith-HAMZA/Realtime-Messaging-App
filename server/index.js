@@ -8,12 +8,9 @@ const messageRoutes = require("./routes/message.route");
 const { Server } = require("socket.io");
 
 class ChatApp {
-
   // * connected-Sockets in the application
   onlineUsers = new Set();
   constructor(port) {
-
-
     this.app = express();
     this.server = http.createServer(this.app);
     this.io = new Server(this.server, {
@@ -57,8 +54,7 @@ class ChatApp {
       this.onlineUsers.add(socket.id);
 
       // Send updated online users list to all clients
-      this.io.emit('onlineUsers', Array.from(this.onlineUsers));
-
+      this.io.emit("onlineUsers", Array.from(this.onlineUsers));
 
       // * Setting the user to the room, & emmiting the 'connected' event
       socket.on("setup", (userData) => {
@@ -80,14 +76,14 @@ class ChatApp {
         console.log("Joined The Chat Room, with chat-id " + chatRoomData._id);
       });
 
-      socket.on('disconnect', () => {
-        console.log('A user disconnected');
+      socket.on("disconnect", () => {
+        console.log("A user disconnected");
 
         // Remove user from online users set
         this.onlineUsers.delete(socket.id);
 
         // Send updated online users list to all clients
-        this.io.emit('onlineUsers', Array.from(this.onlineUsers));
+        this.io.emit("onlineUsers", Array.from(this.onlineUsers));
       });
 
       socket.on("newMessage", ({ message, chat }) => {

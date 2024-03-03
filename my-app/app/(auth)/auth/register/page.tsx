@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { Button } from "@/components/ui/button";
 import { setCookie, setLocalStorageItem } from "@/lib/utils";
 import UserService from "@/services/userServices";
@@ -10,6 +10,7 @@ import { Toaster, toast } from "sonner";
 import { useCookies } from "react-cookie";
 import { useUser } from "@/app/context/UserProvider";
 import { placeHolderImage } from "@/utils/constants";
+import { uploadFiles } from "@/utils/uploadthing";
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
   const [imageBase64, setImageBase64] = React.useState(null);
@@ -74,17 +75,28 @@ const SignUp = () => {
       toast.error("Password and Confirm Password do not match");
       return;
     }
+    if (!imageBase64) {
+      console.log(imageBase64);
+      toast.error("Kindly, Choose Your Profile Image");
+      return;
+    }
 
     const userServices = new UserService(cookies?.Authorization);
 
     setLoading(true);
 
     try {
+      // * upload file to Uploadthing using api-endpoint '/imageUploader'
+      const imageRes = await uploadFiles("imageUploader", {
+        files: [formData.get("image")],
+      });
+
       // Call the registerUser function from the service
       const data = await userServices.register(
         `${firstName} ${lastName}`,
         email,
-        password
+        password,
+        imageRes[0]?.url ?? ""
       );
 
       toast.success(data.message ?? "Successfully account created");
@@ -108,7 +120,7 @@ const SignUp = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageBase64(reader.result);
+        setImageBase64(reader?.result);
       };
       reader.readAsDataURL(file);
     }
@@ -116,7 +128,6 @@ const SignUp = () => {
 
   return (
     <div className="mx-auto max-w-sm my-8 space-y-6">
-      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
@@ -138,7 +149,6 @@ const SignUp = () => {
             id="image"
             name="image"
             className="hidden"
-            required
             onChange={handleImageChange}
           />
         </div>
