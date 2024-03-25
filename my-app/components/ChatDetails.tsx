@@ -33,6 +33,8 @@ import { socket } from "@/utils/socket";
 import { Socket } from "socket.io-client";
 import { toast } from "sonner";
 import Profile from "./Profile";
+import ChatService from "@/services/chatService";
+import { useRouter } from "next/navigation";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
@@ -44,7 +46,7 @@ const ChatDetails: React.FC<ChatProps> = ({
   chatDetails,
   messagesData,
 }: ChatProps) => {
-  const { logout, Chat, getAuthCookie } = useUser();
+  const { logout, Chat, setChats, Chats, getAuthCookie } = useUser();
   const { darkMode, toggleTheme } = useTheme();
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
@@ -54,8 +56,10 @@ const ChatDetails: React.FC<ChatProps> = ({
   const [Messages, setMessages] = useState<Message[] | []>(
     messagesData as Message[]
   );
-
+  const [IsLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const r = useRouter();
+  const currentChatId = chatDetails._id || "";
   const scrollToBottom = () => {
     if (containerRef.current)
       containerRef.current?.scrollTo(0, containerRef.current.scrollHeight);
@@ -85,11 +89,11 @@ const ChatDetails: React.FC<ChatProps> = ({
     };
   }, []);
 
+  const chatService = new ChatService(getAuthCookie());
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const currentUser = getCurrentUser()?.user;
-
     const messageService = new MessageService(getAuthCookie());
     if (!currentUser) {
       // * Show Toast For temporing the logged-in userdata in the localstorage
@@ -193,8 +197,35 @@ const ChatDetails: React.FC<ChatProps> = ({
                         <Button
                           disabled={
                             !RenameText.length ||
-                            chatDetails.chatName === RenameText
+                            chatDetails.chatName === RenameText ||
+                            IsLoading
                           }
+                          onClick={async () => {
+                            setIsLoading(true);
+
+                            await chatService.renameGroupChat(
+                              chatDetails._id,
+                              RenameText
+                            );
+                            setIsLoading(false);
+
+                            toast.success("Group Name Updated Successfully");
+                            setChats((prev: Chat[]) => {
+                              return prev.map((chat: Chat) => {
+                                if (
+                                  chat._id.toString() ===
+                                  currentChatId.toString()
+                                ) {
+                                  // returning chat with updating chat-name
+                                  return {
+                                    ...chat,
+                                    chatName: RenameText,
+                                  };
+                                } else return chat;
+                              });
+                            });
+                            // r.refresh();
+                          }}
                         >
                           Rename
                         </Button>

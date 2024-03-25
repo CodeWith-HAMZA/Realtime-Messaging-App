@@ -46,7 +46,7 @@ class ChatService {
     try {
       const response = await axiosInstance.get("/api/chat/group-chats", {
         headers: {
-          Authorization: `${this.token}`,
+          token: `${this.token}`,
         },
       });
       return response.data;
@@ -66,7 +66,7 @@ class ChatService {
         },
         {
           headers: {
-            Authorization: `${this.token}`,
+            token: `${this.token}`,
           },
         }
       );
@@ -105,7 +105,7 @@ class ChatService {
         },
       });
       return response.data;
-    } catch (error) {   
+    } catch (error) {
       console.error("Error accessing chat:", error);
 
       throw error;

@@ -22,6 +22,7 @@ const Sidebar = () => {
   const [Toggle, setToggle] = useState(false);
   const { Chats, setChats, getAuthCookie, setChat } = useUser();
   const [Loading, setLoading] = useState(true);
+  const [SearchTerm, setSearchTerm] = useState("");
   const pathname = usePathname();
   const r = useRouter();
   const chatService = new ChatService(getAuthCookie());
@@ -35,16 +36,24 @@ const Sidebar = () => {
     });
   }, []);
 
+  // filter chats on changing SearchTerm State with useMemo hook
+  const filteredChats = React.useMemo(() => {
+    if (SearchTerm.length === 0) {
+      return Chats;
+    }
+    return Chats.filter((chat) =>
+      chat.chatName.toLowerCase().includes(SearchTerm)
+    );
+  }, [SearchTerm, Chats]);
 
   useEffect(() => {
-    socket.on('onlineUsers', (users) => {
-      console.log(users, 'users oline')
+    socket.on("onlineUsers", (users) => {
+      console.log(users, "users oline");
     });
     return () => {
-      socket.off('onlineUsers')
-    }
+      socket.off("onlineUsers");
+    };
   }, []);
-
 
   function handleSelectChat(chat: Chat) {
     setChat(chat);
@@ -64,7 +73,12 @@ const Sidebar = () => {
           {!Toggle && (
             <div className="flex gap-1 flex-col">
               {" "}
-              <Input className={`w-full`} placeholder="Search contacts..." />
+              <Input
+                value={SearchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`w-full`}
+                placeholder="Search contacts..."
+              />
               <CreateNewChat />
             </div>
           )}
@@ -78,8 +92,8 @@ const Sidebar = () => {
               <>
                 <UserSkeleton n={7} />
               </>
-            ) : (
-              Chats.map((chat) => {
+            ) : filteredChats.length ? (
+              filteredChats?.map((chat) => {
                 const { users } = chat;
                 return (
                   <div onClick={() => handleSelectChat(chat)}>
@@ -98,6 +112,10 @@ const Sidebar = () => {
                   </div>
                 );
               })
+            ) : (
+              <span className="text-gray-600 px-4  font-semibold text-sm">
+                No Chats found with "{SearchTerm}"
+              </span>
             )}
           </div>
           <h3 className="px-4 py-2 mt-4 font-semibold text-gray-500 dark:text-gray-400">
