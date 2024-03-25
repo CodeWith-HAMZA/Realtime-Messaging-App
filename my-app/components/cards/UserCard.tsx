@@ -4,6 +4,7 @@ import { User } from "@/utils/interfaces/user";
 import Chat from "@/utils/interfaces/chat";
 import { Button } from "../ui/button";
 import { millisecondsToDate, truncateString } from "@/lib/utils";
+import { placeHolderImage } from "@/utils/constants";
 
 interface UserCardProps {
   readonly user: User;
@@ -20,6 +21,7 @@ const UserCard: React.FC<UserCardProps> = ({
   chat,
   children,
 }) => {
+  console.log(user, "USER HE YE");
   return (
     <div
       className={`flex justify-between px-4 m-0.5 cursor-pointer py-2 hover:bg-opacity-70 dark:hover:bg-opacity-70 active:bg-gray-200 dark:active:bg-gray-200 ring-black rounded-md transition-all border-t ${className}`}
@@ -27,7 +29,10 @@ const UserCard: React.FC<UserCardProps> = ({
       <div className="flex items-center justify-between w-full">
         <div className="flex gap-3 items-center">
           <Avatar className="h-9 w-9">
-            <AvatarImage alt="@johndoe" src="/placeholder-avatar.jpg" />
+            <AvatarImage
+              alt="@johndoe"
+              src={user?.profile || placeHolderImage}
+            />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0 ">
@@ -56,7 +61,7 @@ const UserCard: React.FC<UserCardProps> = ({
                   ) ?? ""}
                 </span>
                 <span className="text-sm">
-                  {chat?.latestMessage?.content ?? ""} 
+                  {chat?.latestMessage?.content ?? ""}
                 </span>
               </p>
             )}

@@ -96,5 +96,5 @@ export function millisecondsToDate<T extends string | Date | number>(
   const date = new Date(milliseconds).toLocaleTimeString();
 
   // Return the date
-  return date;
+  return date === "Invalid Date" ? "" : date;
 }

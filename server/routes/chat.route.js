@@ -63,12 +63,12 @@ router.route("/all").get(authenticateToken, async function (req, res) {
   try {
     // Retrieve all chats where the users array contains the specified userId
     const chats = await Chat.find({ users: { $all: [currentUser] } })
-      .populate({ path: "users", select: "name email" }) // Populate 'users' field with 'name' and 'email' properties
-      .populate({ path: "groupAdmin", select: "name email" }) // Populate 'admins' field with 'name' and 'email' properties
+      .populate({ path: "users", select: "name email profile" }) // Populate 'users' field with 'name' and 'email' properties
+      .populate({ path: "groupAdmin", select: "name email profile" }) // Populate 'admins' field with 'name' and 'email' properties
       .populate({
         path: "latestMessage",
         select: "content createdAt",
-        populate: { path: "sender", select: "email -_id" },
+        populate: { path: "sender", select: "email profile -_id" },
       })
       .sort({ updatedAt: "descending" }); // Sort chats from newest to oldest based on 'createdAt' field
 
