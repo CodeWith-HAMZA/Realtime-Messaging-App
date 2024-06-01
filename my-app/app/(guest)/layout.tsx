@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ThemeProvider } from "../context/ThemeProvider";
+import {   MessageCircleIcon } from "lucide-react";
+import Link from "next/link";
 export default async function GuestLayout({
   children,
 }: {
@@ -25,7 +27,40 @@ export default async function GuestLayout({
       <html lang="en">
         <body className={inter.className}>
           <UserProvider>
-            <main className="font-sans ">{children}</main>
+            <div className="flex flex-col min-h-[100dvh]">
+              <header className="px-4 fixed w-full top-0 z-10 bg-white shadow-md lg:px-6 h-14 flex items-center">
+                <Link
+                  className="flex items-center justify-center gap-2"
+                  href="#"
+                >
+                  <MessageCircleIcon className="text-gray-700 " />
+
+                  <span className=" font-semibold">i Chat</span>
+                  <span className="sr-only">Acme Inc</span>
+                </Link>
+                <nav className="ml-auto flex gap-4 sm:gap-6">
+                  <Link
+                    className="text-sm font-medium hover:underline underline-offset-4"
+                    href="/"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    className="text-sm font-medium hover:underline underline-offset-4"
+                    href="/about"
+                  >
+                    About
+                  </Link>
+                  <Link
+                    className="text-sm font-medium hover:underline underline-offset-4"
+                    href="/auth/register"
+                  >
+                    Register
+                  </Link>
+                </nav>
+              </header>
+              {children}
+            </div>
           </UserProvider>
         </body>
       </html>

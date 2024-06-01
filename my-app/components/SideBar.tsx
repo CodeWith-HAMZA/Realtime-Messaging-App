@@ -15,11 +15,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
-import { getOtherUser } from "@/lib/utils";
+import { getCurrentUser, getOtherUser } from "@/lib/utils";
 import { socket } from "@/utils/socket";
-
+import { MdAdd } from "react-icons/md";
+import { MessageCircle, MessageCircleMore } from "lucide-react";
+type OnlineUsers = {
+  [key: string]: string;
+};
 const Sidebar = () => {
   const [Toggle, setToggle] = useState(false);
+  const [OnlineUsers, setOnlineUsers] = useState<OnlineUsers | {}>({});
   const { Chats, setChats, getAuthCookie, setChat } = useUser();
   const [Loading, setLoading] = useState(true);
   const [SearchTerm, setSearchTerm] = useState("");
@@ -46,11 +51,20 @@ const Sidebar = () => {
     );
   }, [SearchTerm, Chats]);
 
+  function checkEmailExists(emails: string[]) {
+    const isOnline = emails.some((email) => OnlineUsers.hasOwnProperty(email));
+    console.log(isOnline, emails, OnlineUsers, " log");
+    return isOnline;
+  }
   useEffect(() => {
-    socket.on("onlineUsers", (users) => {
-      console.log(users, "users oline");
+    console.log(socket.connected);
+    socket.on("onlineUsers", (onlineUsers: OnlineUsers) => {
+      console.log(onlineUsers, " online Users hen ye");
+      // setOnlineUsers(onlineUsers || {}); // ye socket on nhi chalrrrha emit karny k bawajood
     });
+
     return () => {
+      socket.close();
       socket.off("onlineUsers");
     };
   }, []);
@@ -79,7 +93,14 @@ const Sidebar = () => {
                 className={`w-full`}
                 placeholder="Search contacts..."
               />
-              <CreateNewChat />
+              <CreateNewChat
+                triggerElem={
+                  <div className="flex justify-center gap-3 items-center  text-white bg-black hover:bg-opacity-80 w-full px-3 py-2 rounded-md  bg-opacity-90 transition-all">
+                    <span>New Chat</span>
+                    <MessageCircleMore size={20} />
+                  </div>
+                }
+              />
             </div>
           )}
         </div>
@@ -90,14 +111,36 @@ const Sidebar = () => {
           <div className="divide-y pt-2 flex-col flex">
             {Loading ? (
               <>
-                <UserSkeleton n={7} />
+                <div className="py-2 px-4 ">
+                  <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+                  <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+                </div>
+                <div className="py-2 px-4 ">
+                  <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+                  <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+                </div>
               </>
             ) : filteredChats.length ? (
-              filteredChats?.map((chat) => {
+              filteredChats?.map((chat, idx) => {
                 const { users } = chat;
+
                 return (
-                  <div onClick={() => handleSelectChat(chat)}>
+                  <div key={idx} onClick={() => handleSelectChat(chat)}>
                     <UserCard
+                      isOnline={
+                        !chat.isGroupChat
+                          ? checkEmailExists(
+                              users
+                                .map((user) => {
+                                  return user.email;
+                                })
+                                .filter((email) => {
+                                  const currentUser = getCurrentUser()?.user;
+                                  return email !== currentUser?.email;
+                                })
+                            )
+                          : false
+                      }
                       chat={chat}
                       className={
                         pathname === "/chat/" + chat._id
@@ -112,10 +155,22 @@ const Sidebar = () => {
                   </div>
                 );
               })
-            ) : (
+            ) : SearchTerm.length === "" ? (
               <span className="text-gray-600 px-4  font-semibold text-sm">
-                No Chats found with "{SearchTerm}"
+                No Chats found with {"'"}
+                {SearchTerm} {"'"}
               </span>
+            ) : (
+              <div className="flex text-gray-600 px-4 gap-2 font-semibold text-sm">
+                <span>No Chats, </span>
+                <CreateNewChat
+                  triggerElem={
+                    <span className="underline hover:no-underline text-black hover:text-gray-600">
+                      Create One
+                    </span>
+                  }
+                />
+              </div>
             )}
           </div>
           <h3 className="px-4 py-2 mt-4 font-semibold text-gray-500 dark:text-gray-400">

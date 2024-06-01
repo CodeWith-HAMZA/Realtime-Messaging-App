@@ -6,10 +6,9 @@ interface UserSkeletonProps {
 }
 export const UserSkeleton: React.FC<UserSkeletonProps> = ({ n }) => (
   <>
-    {createArray(n).map(() => (
-      <div className="py-2 px-4">
-        <Skeleton className="w-[16rem] mb-1 h-[1.2rem] border-2" />
-        <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />
+    {createArray(n).map((n, i) => (
+      <div key={i} className="py-2 px-4">
+       
       </div>
     ))}
   </>
@@ -19,5 +18,5 @@ function createArray(n: number) {
   return Array.from({ length: n });
 }
 
-
-export const placeHolderImage = 'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'
+export const placeHolderImage =
+  "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg";

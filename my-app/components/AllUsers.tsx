@@ -38,15 +38,17 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
       timeoutId = setTimeout(() => func.apply(this, args), delay);
     };
   };
-  const fetchUsers = debounce(async () => {
-    setLoading("FetchingUsers");
-    const userService = new UserService(getAuthCookie());
-    const { users } = await userService.searchUsers(Query);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading("FetchingUsers");
+      const userService = new UserService(getAuthCookie());
+      const { users } = await userService.searchUsers(Query);
 
-    setLoading("");
-    setUsers(users);
-  }, 400);
-  useEffect(fetchUsers, [Query]);
+      setLoading("");
+      setUsers(users);
+    };
+    fetchUsers();
+  }, [Query, getAuthCookie]);
 
   function removeUserFromSelection(user: User) {
     setSelectedUsers((_) => _.filter((_) => _._id !== user._id));
@@ -64,7 +66,29 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
 
   let content =
     Loading === "FetchingUsers" ? (
-      <UserSkeleton n={5} />
+      <>
+        {" "}
+        <div className="py-2 px-4 ">
+          <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+          <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+        </div>
+        <div className="py-2 px-4 ">
+          <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+          <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+        </div>
+        <div className="py-2 px-4 ">
+          <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+          <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+        </div>
+        <div className="py-2 px-4 ">
+          <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+          <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+        </div>
+        <div className="py-2 px-4 ">
+          <Skeleton className="w-[12rem] mb-1 h-[1.2rem] border-2" />
+          <Skeleton className="w-[4rem] h-[0.8rem]  border-2" />{" "}
+        </div>
+      </>
     ) : Users.length ? (
       Users.map((user) => (
         <div
@@ -82,7 +106,7 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
     ) : (
       <p className="px-4 text-lg">
         No Users Exists Having{" "}
-        <span className="font-bold text-xl">"{Query}"</span>
+        <span className="font-bold text-xl">`{Query}`</span>
       </p>
     );
 

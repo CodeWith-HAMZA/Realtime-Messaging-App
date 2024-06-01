@@ -20,6 +20,7 @@ import {
 import UserCard from "./cards/UserCard";
 import DropdownMenuComponent from "./shared/DropDownComponent";
 import {
+  deepClone,
   getCurrentUser,
   isCurrentUserSender,
   truncateString,
@@ -47,7 +48,6 @@ const ChatDetails: React.FC<ChatProps> = ({
   messagesData,
 }: ChatProps) => {
   const { logout, Chat, setChats, Chats, getAuthCookie } = useUser();
-  const { darkMode, toggleTheme } = useTheme();
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
@@ -60,31 +60,50 @@ const ChatDetails: React.FC<ChatProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const r = useRouter();
   const currentChatId = chatDetails._id || "";
+
+  // scroll to bottom
   const scrollToBottom = () => {
     if (containerRef.current)
       containerRef.current?.scrollTo(0, containerRef.current.scrollHeight);
   };
+
+  // play sound on sending
   const playSound = async () => {
-    await audioRef?.current?.play();
-    console.log("playing");
+    if (audioRef.current) {
+      await audioRef.current.play();
+      console.log("playing");
+    }
   };
 
   useEffect(() => {
     console.log(chatDetails, messagesData);
     scrollToBottom();
-  }, [Messages]);
+  }, [Messages, chatDetails, messagesData]);
 
   useEffect(() => {
-    mySocket = socket;
-    mySocket.emit("joinChatRoom", chatDetails);
-  }, [Chat]);
+    const currentUser = getCurrentUser()?.user;
+    socket.emit("onlineUser", {
+      email: currentUser?.email,
+      userId: currentUser?._id,
+    });
+    socket.emit("joinChatRoom", chatDetails);
+  }, [Chat, chatDetails]);
 
   useEffect(() => {
     socket.on("messageReceived", (data) => {
+      const newMessage = deepClone(data?.message);
       playSound();
-      setMessages((_) => [..._, JSON.parse(JSON.stringify(data?.message))]);
+
+      setMessages((_) => [..._, newMessage]);
+    });
+
+    socket.on("onlineUsers", (onlineUsers) => {
+
+      console.log(onlineUsers, ' online');
+
     });
     return () => {
+      socket.close();
       socket.off("messageReceived");
     };
   }, []);
@@ -306,8 +325,9 @@ const ChatDetails: React.FC<ChatProps> = ({
         >
           <div className="space-y-4 messagesContainer" id="p2">
             {Messages &&
-              Messages?.map((m) => (
+              Messages?.map((m, idx) => (
                 <MessageCard
+                  key={idx}
                   sender={m.sender.email}
                   message={m}
                   isSender={isCurrentUserSender(m.sender._id)}
@@ -335,3 +355,5 @@ const ChatDetails: React.FC<ChatProps> = ({
 };
 
 export default ChatDetails;
+
+

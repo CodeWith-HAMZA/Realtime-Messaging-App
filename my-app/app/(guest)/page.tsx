@@ -1,38 +1,14 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MessageCircleIcon } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <header className="px-4 lg:px-6 h-14 flex items-center">
-        <Link className="flex items-center justify-center" href="#">
-          <MountainIcon className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="/home"
-          >
-            Home
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            About
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="/auth/register"
-          >
-            Register
-          </Link>
-        </nav>
-      </header>
+    <>
+      {" "}
       <main className="flex-1">
-        <section className="w-full pt-12 md:pt-24 lg:pt-32">
+        <section className="w-full pt-32 lg:pt-32">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col gap-4 min-[400px]:gap-8]">
               <div className="space-y-2">
@@ -49,7 +25,7 @@ export default function HomePage() {
                   integrated collaboration.
                 </p>
               </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+              <div className="flex flex-col gap-2 min-[400px]:flex-row pb-32 pt-16">
                 <Link
                   className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                   href="/chat"
@@ -138,7 +114,7 @@ export default function HomePage() {
           </Link>
         </nav>
       </footer>
-    </div>
+    </>
   );
 }
 

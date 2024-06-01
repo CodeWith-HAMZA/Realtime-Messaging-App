@@ -12,6 +12,7 @@ interface UserCardProps {
   readonly className: string;
   readonly chat?: Chat;
   readonly children?: ReactNode;
+  readonly isOnline?: boolean;
 }
 
 const UserCard: React.FC<UserCardProps> = ({
@@ -19,6 +20,7 @@ const UserCard: React.FC<UserCardProps> = ({
   user,
   className,
   chat,
+  isOnline,
   children,
 }) => {
   console.log(user, "USER HE YE");
@@ -31,6 +33,9 @@ const UserCard: React.FC<UserCardProps> = ({
           <Avatar className="h-9 w-9">
             <AvatarImage
               alt="@johndoe"
+              className={`${
+                isOnline && "border-2 border-green-500 rounded-full"
+              }`}
               src={user?.profile || placeHolderImage}
             />
             <AvatarFallback>JD</AvatarFallback>

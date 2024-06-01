@@ -6,10 +6,11 @@ const userRoutes = require("./routes/user.route");
 const chatRoutes = require("./routes/chat.route");
 const messageRoutes = require("./routes/message.route");
 const { Server } = require("socket.io");
+const { deleteKeyValuePairByValue } = require("./utils");
 
 class ChatApp {
   // * connected-Sockets in the application
-  onlineUsers = new Set();
+  connectedUsers = {};
   constructor(port) {
     this.app = express();
     this.server = http.createServer(this.app);
@@ -23,6 +24,25 @@ class ChatApp {
     this.defineRoutes();
     this.startRealtimeCommunication();
     this.startServer(port); // Moved here for convenience
+  }
+  // Add a user to the connectedUsers object
+  addUser(userId, socketId) {
+    this.connectedUsers[userId] = socketId;
+  }
+  // Remove a user from the connectedUsers object
+  removeUser(userId) {
+    delete this.connectedUsers[userId];
+  }
+  removeUserBySocketId(socketId) {
+    deleteKeyValuePairByValue(this.connectedUsers, socketId);
+  }
+  // Check if a user is already connected
+  isUserConnected(userId) {
+    return this.connectedUsers.hasOwnProperty(userId);
+  }
+  // Get the socket ID for a specific user
+  getSocketId(userId) {
+    return this.connectedUsers[userId];
   }
 
   async connectToDatabase() {
@@ -48,27 +68,36 @@ class ChatApp {
   startRealtimeCommunication() {
     this.io.on("connection", (socket) => {
       // socket.join() would join room (implement room logic as needed)
+
       console.log("A user connected with " + socket.id);
 
+      // EMIT THE EVENT FROM CLIENT-SIDE
+      socket.on("onlineUser", ({ email, userId }) => {
+        console.log(email, userId, ' ONLINE_USER emited');
+
+        // * adding new-user to the local-obj
+        this.addUser(email, socket.id);
+
+        // * updating client-side on joining the new-user to the socket-connection
+        socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
+      });
+
       // * Keep adding the sockets/client/users, when ever the client/user/socket connects Real-Time Connection to the server
-      this.onlineUsers.add(socket.id);
+      // this.onlineUsers.add(socket.id);
 
       // Send updated online users list to all clients
-      this.io.emit("onlineUsers", Array.from(this.onlineUsers));
+      // this.io.emit("onlineUsers", Array.from(this.onlineUsers));
 
       // * Setting the user to the room, & emmiting the 'connected' event
-      socket.on("setup", (userData) => {
-        socket.join(userData._id);
-        console.log(userData);
-
-        socket.emit("connected");
-      });
 
       // * joining the user to the chat room, when we click any of the chat on the client-side
 
       socket.on("joinChatRoom", (chatRoomData) => {
         // Using Chat-Id as room's unique-name
-        const chatId = chatRoomData._id;
+        const chatId = chatRoomData?._id || "";
+        if(chatId === '' ) {
+          throw new Error("Chat Id not found while joining the chat-room");
+        }
 
         socket.join(chatId);
 
@@ -80,16 +109,22 @@ class ChatApp {
         console.log("A user disconnected");
 
         // Remove user from online users set
-        this.onlineUsers.delete(socket.id);
+        // this.onlineUsers.delete(socket.id);
+        this.removeUserBySocketId(socket.id);
 
+        socket.emit("onlineUsers", this.connectedUsers);
+
+        console.log(this.connectedUsers, " connected users hen ye");
         // Send updated online users list to all clients
-        this.io.emit("onlineUsers", Array.from(this.onlineUsers));
+        // this.io.emit("onlineUsers", Array.from(this.onlineUsers));
       });
 
       socket.on("newMessage", ({ message, chat }) => {
         // Broadcast the message to all sockets in the room
         // io.to(roomId).emit("message", message);
-        socket.to(chat._id).emit("messageReceived", { message, chat });
+
+        const roomId = chat._id;
+        socket.to(roomId).emit("messageReceived", { message, chat });
       });
       // Server-side code
     });
