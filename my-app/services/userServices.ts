@@ -46,9 +46,9 @@ class UserService {
       toast.success("Successfully Logged in");
       return response.data;
     } catch (error) {
-      toast.error("Error while logging in");
+      toast.error(error?.response?.data?.message || "Error While Login");
       console.error("Error logging in:", error);
-      throw error;
+      // throw error;
     }
   }
 
@@ -112,7 +112,7 @@ class UserService {
           token: this.token,
         },
       });
-      return response.data;
+      return await response.data;
     } catch (error) {
       console.log("Error searching users:", error);
       // throw error;

@@ -34,7 +34,9 @@ const UserCard: React.FC<UserCardProps> = ({
             <AvatarImage
               alt="@johndoe"
               className={`${
-                isOnline && "border-2 border-green-500 rounded-full"
+                !chat?.isGroupChat &&
+                isOnline &&
+                "border-2 border-green-600 rounded-full"
               }`}
               src={user?.profile || placeHolderImage}
             />

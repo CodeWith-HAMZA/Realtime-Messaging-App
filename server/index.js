@@ -73,12 +73,13 @@ class ChatApp {
 
       // EMIT THE EVENT FROM CLIENT-SIDE
       socket.on("onlineUser", ({ email, userId }) => {
-        console.log(email, userId, ' ONLINE_USER emited');
+        console.log(email, userId, " ONLINE_USER emited");
 
         // * adding new-user to the local-obj
         this.addUser(email, socket.id);
 
         // * updating client-side on joining the new-user to the socket-connection
+        socket.broadcast.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
         socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
       });
 
@@ -93,9 +94,11 @@ class ChatApp {
       // * joining the user to the chat room, when we click any of the chat on the client-side
 
       socket.on("joinChatRoom", (chatRoomData) => {
+        console.log("chat joined bhaiya");
         // Using Chat-Id as room's unique-name
         const chatId = chatRoomData?._id || "";
-        if(chatId === '' ) {
+
+        if (chatId === "") {
           throw new Error("Chat Id not found while joining the chat-room");
         }
 
@@ -111,8 +114,11 @@ class ChatApp {
         // Remove user from online users set
         // this.onlineUsers.delete(socket.id);
         this.removeUserBySocketId(socket.id);
+        // * updating client-side on joining the new-user to the socket-connection
+        socket.broadcast.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
+        socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
 
-        socket.emit("onlineUsers", this.connectedUsers);
+        // socket.emit("onlineUsers", this.connectedUsers);
 
         console.log(this.connectedUsers, " connected users hen ye");
         // Send updated online users list to all clients

@@ -30,19 +30,18 @@ import Link from "next/link";
 import MessageCard from "./cards/MessageCard";
 import { Message } from "@/utils/interfaces/message";
 import MessageService from "@/services/messageService";
-import { socket } from "@/utils/socket";
-import { Socket } from "socket.io-client";
 import { toast } from "sonner";
 import Profile from "./Profile";
 import ChatService from "@/services/chatService";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/app/context/SocketProvider";
+import UserService from "@/services/userServices";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
 }
 
-var mySocket: Socket, selectedChatCompare;
-
+const userS = new UserService(localStorage.getItem("token") as string);
 const ChatDetails: React.FC<ChatProps> = ({
   chatDetails,
   messagesData,
@@ -58,7 +57,7 @@ const ChatDetails: React.FC<ChatProps> = ({
   );
   const [IsLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const r = useRouter();
+  const { socket } = useSocket();
   const currentChatId = chatDetails._id || "";
 
   // scroll to bottom
@@ -82,31 +81,31 @@ const ChatDetails: React.FC<ChatProps> = ({
 
   useEffect(() => {
     const currentUser = getCurrentUser()?.user;
-    socket.emit("onlineUser", {
-      email: currentUser?.email,
-      userId: currentUser?._id,
-    });
-    socket.emit("joinChatRoom", chatDetails);
   }, [Chat, chatDetails]);
 
   useEffect(() => {
-    socket.on("messageReceived", (data) => {
+    const currentUser = getCurrentUser()?.user;
+
+    console.log(currentUser, " user-");
+    socket?.on("messageReceived", (data) => {
       const newMessage = deepClone(data?.message);
       playSound();
 
       setMessages((_) => [..._, newMessage]);
     });
 
-    socket.on("onlineUsers", (onlineUsers) => {
-
-      console.log(onlineUsers, ' online');
-
+    socket?.on("onlineUsers", (onlineUsers) => {
+      console.log(onlineUsers, " online");
     });
+   
+    socket?.emit("joinChatRoom", chatDetails);
+
     return () => {
-      socket.close();
-      socket.off("messageReceived");
+      // socket?.close();
+      socket?.off("messageReceived");
+      socket?.off("onlineUsers");
     };
-  }, []);
+  }, [Chat, chatDetails, socket]);
 
   const chatService = new ChatService(getAuthCookie());
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
@@ -125,7 +124,7 @@ const ChatDetails: React.FC<ChatProps> = ({
       chat: chatDetails as Chat,
     };
 
-    socket.emit("newMessage", {
+    socket?.emit("newMessage", {
       message,
       chat: chatDetails as Chat,
     });
@@ -355,5 +354,3 @@ const ChatDetails: React.FC<ChatProps> = ({
 };
 
 export default ChatDetails;
-
-

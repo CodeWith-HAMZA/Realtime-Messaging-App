@@ -23,24 +23,24 @@ export default async function AuthLayout({
   // console.log(props)
   // console.log(cookies().get("Authorization"), 'user auth hun mein ')
 
-  const res = await fetch("http://localhost:4000/api/user/check-auth", {
-    headers: { token: cookies().get("Authorization")?.value },
-  });
+  // const res = await fetch("http://localhost:4000/api/user/check-auth", {
+  //   headers: { token: cookies().get("Authorization")?.value },
+  // });
 
-  const isAuthenticated = res.ok;
+  // const isAuthenticated = res.ok;
 
-  if (isAuthenticated) {
-    // redirect("/chat")
-  } else {
-    // redirect("/auht/login")
-  }
+  // if (isAuthenticated) {
+  //   // redirect("/chat")
+  // } else {
+  //   // redirect("/auht/login")
+  // }
 
   return (
     <ThemeProvider>
       <html lang="en" className="">
         <body className={inter.className}>
           <main>
-            <UserProvider data={await res.json()}>{children}</UserProvider>
+            <UserProvider>{children}</UserProvider>
           </main>
         </body>
       </html>

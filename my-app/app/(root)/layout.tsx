@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ThemeProvider } from "../context/ThemeProvider";
+import { SocketProvider } from "../context/SocketProvider";
 export default async function RootLayout({
   children,
 }: {
@@ -25,10 +26,12 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <UserProvider>
-            <main className="font-sans bg-gray-100 h-screen overflow-hidden flex">
-              <Sidebar />
-              {children}
-            </main>
+            <SocketProvider>
+              <main className="font-sans bg-gray-100 h-screen overflow-hidden flex">
+                <Sidebar />
+                {children}
+              </main>
+            </SocketProvider>
           </UserProvider>
         </body>
       </html>

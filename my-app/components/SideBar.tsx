@@ -16,15 +16,14 @@ import { usePathname } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, getOtherUser } from "@/lib/utils";
-import { socket } from "@/utils/socket";
 import { MdAdd } from "react-icons/md";
 import { MessageCircle, MessageCircleMore } from "lucide-react";
-type OnlineUsers = {
-  [key: string]: string;
-};
+import { useSocket } from "@/app/context/SocketProvider";
+
 const Sidebar = () => {
+  const { socket } = useSocket();
   const [Toggle, setToggle] = useState(false);
-  const [OnlineUsers, setOnlineUsers] = useState<OnlineUsers | {}>({});
+  const [OnlineUsers, setOnlineUsers] = useState<object>({});
   const { Chats, setChats, getAuthCookie, setChat } = useUser();
   const [Loading, setLoading] = useState(true);
   const [SearchTerm, setSearchTerm] = useState("");
@@ -57,17 +56,17 @@ const Sidebar = () => {
     return isOnline;
   }
   useEffect(() => {
-    console.log(socket.connected);
-    socket.on("onlineUsers", (onlineUsers: OnlineUsers) => {
+    // console.log(socket.connected);
+    socket?.on("onlineUsers", (onlineUsers) => {
       console.log(onlineUsers, " online Users hen ye");
-      // setOnlineUsers(onlineUsers || {}); // ye socket on nhi chalrrrha emit karny k bawajood
+      setOnlineUsers(onlineUsers || {}); // .on nhi challraha for online emit karny k bawajood due to the proper integeration on client-side, (always use context for sockets)
     });
 
     return () => {
-      socket.close();
-      socket.off("onlineUsers");
+      // socket?.close();
+      socket?.off("onlineUsers");
     };
-  }, []);
+  }, [socket]);
 
   function handleSelectChat(chat: Chat) {
     setChat(chat);
@@ -77,6 +76,7 @@ const Sidebar = () => {
     <aside
       className={`bg-white relative shadow-sm ${!Toggle ? "w-1/4" : "w-0"}`}
     >
+     
       <div
         onClick={() => setToggle((_) => !_)}
         className="bg-black w-4 h-4 rounded-full absolute -right-2.5 top-1/2 cursor-pointer hover:h-7 hover:top-[49%] transition-all"
@@ -128,19 +128,25 @@ const Sidebar = () => {
                   <div key={idx} onClick={() => handleSelectChat(chat)}>
                     <UserCard
                       isOnline={
-                        !chat.isGroupChat
-                          ? checkEmailExists(
-                              users
-                                .map((user) => {
-                                  return user.email;
-                                })
-                                .filter((email) => {
-                                  const currentUser = getCurrentUser()?.user;
-                                  return email !== currentUser?.email;
-                                })
-                            )
-                          : false
+                        OnlineUsers &&
+                        Object.keys(OnlineUsers).includes(
+                          getOtherUser(chat.users).email
+                        )
                       }
+                      // isOnline={
+                      //   !chat.isGroupChat
+                      //     ? checkEmailExists(
+                      //         users
+                      //           .map((user) => {
+                      //             return user.email;
+                      //           })
+                      //           .filter((email) => {
+                      //             const currentUser = getCurrentUser()?.user;
+                      //             return email !== currentUser?.email;
+                      //           })
+                      //       )
+                      //     : false
+                      // }
                       chat={chat}
                       className={
                         pathname === "/chat/" + chat._id

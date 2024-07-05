@@ -79,7 +79,6 @@ export function isCurrentUserSender(senderId: string) {
 
 export function getOtherUser(users: User[]) {
   console.log("first");
-  let currentUserId = "seaut";
   const data = getLocalStorageItem("user");
   const currentUser = data?.user._id;
   return currentUser === users[0]._id ? users[1] : users[0];
@@ -102,4 +101,3 @@ export function millisecondsToDate<T extends string | Date | number>(
 export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
-  

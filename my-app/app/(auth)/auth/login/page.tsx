@@ -28,17 +28,20 @@ const Login = () => {
     const userServices = new UserService(cookies["Authorization"]);
     let email, name;
     setLoading(true);
-    const data = await userServices.login(
-      formData.get("email")?.toString(),
-      formData.get("password")?.toString()
-    );
-    console.log(data.token);
+    try {
+      const data = await userServices.login(
+        formData.get("email")?.toString(),
+        formData.get("password")?.toString()
+      );
+      console.log(data.token);
 
-    user.login(data.user.name, data.user.email, data?.token as string);
-    setLocalStorageItem("user", data);
-    
-
-    setLoading(false);
+      user.login(data.user.name, data.user.email, data?.token as string);
+      setLoading(false);
+      setLocalStorageItem("user", data);
+    } catch (error) {
+    } finally {
+      setLoading(false  );
+    }
   };
 
   return (
