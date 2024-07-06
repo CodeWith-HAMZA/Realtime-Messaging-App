@@ -79,8 +79,8 @@ class ChatApp {
         this.addUser(email, socket.id);
 
         // * updating client-side on joining the new-user to the socket-connection
-        socket.broadcast.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
-        socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
+        this.io.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
+        // socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
       });
 
       // * Keep adding the sockets/client/users, when ever the client/user/socket connects Real-Time Connection to the server
@@ -115,14 +115,9 @@ class ChatApp {
         // this.onlineUsers.delete(socket.id);
         this.removeUserBySocketId(socket.id);
         // * updating client-side on joining the new-user to the socket-connection
-        socket.broadcast.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
-        socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
-
-        // socket.emit("onlineUsers", this.connectedUsers);
+        this.io.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
 
         console.log(this.connectedUsers, " connected users hen ye");
-        // Send updated online users list to all clients
-        // this.io.emit("onlineUsers", Array.from(this.onlineUsers));
       });
 
       socket.on("newMessage", ({ message, chat }) => {

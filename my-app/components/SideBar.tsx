@@ -57,15 +57,16 @@ const Sidebar = () => {
   }
   useEffect(() => {
     // console.log(socket.connected);
-    socket?.on("onlineUsers", (onlineUsers) => {
-      console.log(onlineUsers, " online Users hen ye");
-      setOnlineUsers(onlineUsers || {}); // .on nhi challraha for online emit karny k bawajood due to the proper integeration on client-side, (always use context for sockets)
-    });
+    if (socket) {
+      socket.on("onlineUsers", (onlineUsers) => {
+        console.log(onlineUsers, " online Users hen ye");
+        setOnlineUsers(onlineUsers || {}); // .on nhi challraha for online emit karny k bawajood due to the proper integeration on client-side, (always use context for sockets)
+      });
 
-    return () => {
-      // socket?.close();
-      socket?.off("onlineUsers");
-    };
+      return () => {
+        socket.off("onlineUsers");
+      };
+    }
   }, [socket]);
 
   function handleSelectChat(chat: Chat) {
@@ -76,7 +77,6 @@ const Sidebar = () => {
     <aside
       className={`bg-white relative shadow-sm ${!Toggle ? "w-1/4" : "w-0"}`}
     >
-     
       <div
         onClick={() => setToggle((_) => !_)}
         className="bg-black w-4 h-4 rounded-full absolute -right-2.5 top-1/2 cursor-pointer hover:h-7 hover:top-[49%] transition-all"

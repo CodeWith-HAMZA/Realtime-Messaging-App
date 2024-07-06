@@ -35,15 +35,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   useEffect(() => {
     const newSocket = io(URL as string); // Replace with your server URL
 
-    const currentUser = getCurrentUser()?.user;
-    if (currentUser) {
-      newSocket?.emit("onlineUser", {
-        email: currentUser?.email,
-        userId: currentUser?._id,
-      });
-    }
+    newSocket.on("connect", () => {
+      const currentUser = getCurrentUser()?.user;
+      if (currentUser) {
+        newSocket.emit("onlineUser", {
+          email: currentUser?.email,
+          userId: currentUser?._id,
+        });
+      }
+    });
 
     setSocket(newSocket);
+
     return () => {
       newSocket.disconnect(); // Cleanup on unmount
     };
