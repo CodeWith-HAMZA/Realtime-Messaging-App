@@ -79,8 +79,8 @@ class ChatApp {
         this.addUser(email, socket.id);
 
         // * updating client-side on joining the new-user to the socket-connection
-        this.io.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
-        // socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE
+        this.io.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE, (it brooadcasts to all of the users including "the current")
+        // socket.emit("onlineUsers", this.connectedUsers); // LISTEN EVENT ON CLIENT-SIDE, it doesn't sends to all of the connected-users including (the current)
       });
 
       // * Keep adding the sockets/client/users, when ever the client/user/socket connects Real-Time Connection to the server

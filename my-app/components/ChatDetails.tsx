@@ -20,8 +20,10 @@ import {
 import UserCard from "./cards/UserCard";
 import DropdownMenuComponent from "./shared/DropDownComponent";
 import {
+  cn,
   deepClone,
   getCurrentUser,
+  getOtherUser,
   isCurrentUserSender,
   truncateString,
 } from "@/lib/utils";
@@ -56,7 +58,9 @@ const ChatDetails: React.FC<ChatProps> = ({
     messagesData as Message[]
   );
   const [IsLoading, setIsLoading] = useState(false);
+  const [OnlineUsers, setOnlineUsers] = useState({});
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const { socket } = useSocket();
   const currentChatId = chatDetails._id || "";
 
@@ -96,8 +100,10 @@ const ChatDetails: React.FC<ChatProps> = ({
 
     socket?.on("onlineUsers", (onlineUsers) => {
       console.log(onlineUsers, " online");
+
+      setOnlineUsers(onlineUsers);
     });
-   
+
     socket?.emit("joinChatRoom", chatDetails);
 
     return () => {
@@ -124,6 +130,7 @@ const ChatDetails: React.FC<ChatProps> = ({
       chat: chatDetails as Chat,
     };
 
+    chatDetails.users[0].email;
     socket?.emit("newMessage", {
       message,
       chat: chatDetails as Chat,
@@ -144,6 +151,9 @@ const ChatDetails: React.FC<ChatProps> = ({
       });
   };
 
+  const isOtherOnline = Object.keys(OnlineUsers).includes(
+    getOtherUser(chatDetails.users)?.email || ""
+  );
   return (
     <div className="flex-grow p-4 ">
       <audio ref={audioRef} src="/sound.mp3" />
@@ -158,7 +168,9 @@ const ChatDetails: React.FC<ChatProps> = ({
             {/* <span>{}</span> */}
             <h1 className="text-lg font-semibold"></h1>
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-500 text-white pb-1">Online</Badge>
+              <Badge className={cn("  text-white pb-1 bg-gray-400")}>
+                {isOtherOnline ? "Online" : "Offline"}
+              </Badge>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {/* {userData?.email} */}
               </span>
