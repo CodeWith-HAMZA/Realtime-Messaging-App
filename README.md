@@ -24,6 +24,8 @@ This project is a real-time chat application built with Node.js, Express, and Ne
   - TypeScript
 
 
+## Screen shots
+
 ![345746617-ffc7cb63-c575-4d3e-ae35-33159a1c754b](https://github.com/user-attachments/assets/d7958e8e-860f-42d3-ac61-fd21b363f10b)
 ![345746662-736d6158-12e8-4ceb-9663-9ae7052b0549](https://github.com/user-attachments/assets/11abad2c-2e8e-4b37-8dc8-a9102264a7d9)
 ![362343606-c8c96cba-ff4d-4581-b287-e6af52e11d5c](https://github.com/user-attachments/assets/48f9e54b-e1d6-450b-8a70-c67c0654f302)
