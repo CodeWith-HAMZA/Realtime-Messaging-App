@@ -3,20 +3,37 @@ const router = express.Router();
 const Message = require("../models/message.model");
 const { authenticateToken } = require("../middleware");
 const Chat = require("../models/chat.model");
+const multer = require("multer");
+const upload = require("../config/multer");
+const Media = require("../models/media.model");
 
 // Create a new message
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, upload.single("file"), async (req, res) => {
+  console.log(req.file, " shaddu");
+
   try {
     const { chatId, content } = req.body;
     const senderId = req.user._id;
     // Create a new message instance
     const message = new Message({ chat: chatId, sender: senderId, content });
+
     // Save the message to the database
-    const savedMessage = await message.save();
+    let savedMessage = await message.save();
 
     const chat = await Chat.findById(chatId);
     chat["latestMessage"] = savedMessage._id;
     await chat.save();
+
+    const fileUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    const media = await Media.create({
+      message: savedMessage._id,
+      url: req.file ? fileUrl : "null",
+      mediaType: req.file ? req.file.mimetype : "image",
+    });
+
+    if (media) {
+      savedMessage["media"] = [media];
+    }
 
     return res.status(201).json(savedMessage);
   } catch (error) {

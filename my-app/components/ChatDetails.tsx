@@ -7,7 +7,7 @@ import { Badge } from "./ui/badge";
 
 import { ArrowLeftIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { useUser } from "@/app/context/UserProvider";
-import { useTheme } from "@/app/context/ThemeProvider";
+
 import { IoMdExit, IoMdMore } from "react-icons/io";
 import {
   Dialog,
@@ -29,15 +29,16 @@ import {
 } from "@/lib/utils";
 
 import Link from "next/link";
-import MessageCard from "./cards/MessageCard";
 import { Message } from "@/utils/interfaces/message";
 import MessageService from "@/services/messageService";
 import { toast } from "sonner";
 import Profile from "./Profile";
 import ChatService from "@/services/chatService";
-import { useRouter } from "next/navigation";
 import { useSocket } from "@/app/context/SocketProvider";
 import UserService from "@/services/userServices";
+import MessageForm from "./forms/MessageForm";
+import MessagesList from "./MessageList";
+import FileInput from "./forms/FileInput";
 interface ChatProps {
   readonly chatDetails: Chat;
   readonly messagesData: Message[];
@@ -52,11 +53,15 @@ const ChatDetails: React.FC<ChatProps> = ({
   const [RenameText, setRenameText] = useState<string | "">(
     chatDetails.isGroupChat ? chatDetails.chatName : ""
   );
+  const [toggleFilesModal, setToggleFilesModal] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [MessageText, setMessageText] = useState("");
   const [Messages, setMessages] = useState<Message[] | []>(
     messagesData as Message[]
   );
+
+  const [files, setFiles] = useState<File[]>([]);
+  const [previewFiles, setPreviewFiles] = useState<string[]>([]);
   const [IsLoading, setIsLoading] = useState(false);
   const [OnlineUsers, setOnlineUsers] = useState({});
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -74,7 +79,6 @@ const ChatDetails: React.FC<ChatProps> = ({
   const playSound = async () => {
     if (audioRef.current) {
       await audioRef.current.play();
-      console.log("playing");
     }
   };
 
@@ -117,38 +121,47 @@ const ChatDetails: React.FC<ChatProps> = ({
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!MessageText) {
+      toast.error("Please enter a message");
+      return;
+    }
     const currentUser = getCurrentUser()?.user;
-    const messageService = new MessageService(getAuthCookie());
     if (!currentUser) {
       // * Show Toast For temporing the logged-in userdata in the localstorage
       return;
     }
 
+    const messageService = new MessageService(getAuthCookie());
+    // TODo! have to "handle multiple files with video" (currently) handled one-image file, also optimize the "server"
     let message: Message = {
       content: MessageText,
       sender: currentUser,
       chat: chatDetails as Chat,
+      media: [{ url: URL.createObjectURL(files.at(0)), mediaType: "image" }],
     };
-
-    chatDetails.users[0].email;
-    socket?.emit("newMessage", {
-      message,
-      chat: chatDetails as Chat,
-    });
 
     setMessages((previousMessages: Message[]) => [
       ...previousMessages,
       message,
     ]);
     setMessageText("");
+    console.log(files);
     messageService
-      .createMessage(chatDetails?._id, MessageText)
+      .createMessage(chatDetails?._id, MessageText, files)
       .then((_) => {
+        socket?.emit("newMessage", {
+          message,
+          chat: chatDetails as Chat,
+        });
         console.log("message sent successfuly");
+        // toast.success("Message sent successfully");
       })
       .catch((err: unknown) => {
         console.log("error occured while sending message", err);
+        toast.error("Failed to send message");
       });
+
+    setToggleFilesModal(false);
   };
 
   const isOtherOnline = Object.keys(OnlineUsers).includes(
@@ -334,31 +347,30 @@ const ChatDetails: React.FC<ChatProps> = ({
           id="p"
           ref={containerRef}
         >
-          <div className="space-y-4 messagesContainer" id="p2">
-            {Messages &&
-              Messages?.map((m, idx) => (
-                <MessageCard
-                  key={idx}
-                  sender={m.sender.email}
-                  message={m}
-                  isSender={isCurrentUserSender(m.sender._id)}
-                />
-              ))}
-          </div>
+          <MessagesList messages={Messages || []} />
         </div>
         {chatDetails && (
-          <form
-            onSubmit={handleSendMessage}
-            className="flex h-14 items-center gap-4 border-t px-6 dark:border-gray-800"
-          >
-            <Input
-              value={MessageText}
-              onChange={(e) => setMessageText(e.currentTarget.value)}
-              className="flex-1"
-              placeholder="Type your message"
+          <>
+            {toggleFilesModal && (
+              <FileInput
+                title="Attachements"
+                onFilesChange={(files) => {
+                  // @ts-ignore
+                  console.log(files, "files");
+                  setFiles(files);
+                }}
+                onlyPreview={false}
+                // filesForPreview={files || []}
+              />
+            )}
+
+            <MessageForm
+              onSubmit={handleSendMessage}
+              MessageText={MessageText}
+              setMessageText={setMessageText}
+              setToggleFilesModal={setToggleFilesModal}
             />
-            <Button>Send</Button>
-          </form>
+          </>
         )}
       </div>
     </div>

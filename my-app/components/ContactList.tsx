@@ -13,12 +13,10 @@ import { truncateString } from "@/lib/utils";
 import ChatService from "@/services/chatService";
 import { toast } from "sonner";
 import Chat from "@/utils/interfaces/chat";
-import { UserSkeleton } from "@/utils/constants";
-import { groupCollapsed } from "console";
 
-interface AllUsersProps {}
+interface ContactListProps {}
 
-const AllUsers: React.FC<AllUsersProps> = ({}) => {
+const ContactList: React.FC<ContactListProps> = ({}) => {
   const [SelectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [Query, setQuery] = useState("");
   const [Users, setUsers] = useState<User[] | []>([]);
@@ -234,4 +232,4 @@ const AllUsers: React.FC<AllUsersProps> = ({}) => {
   );
 };
 
-export default AllUsers;
+export default ContactList;

@@ -57,6 +57,9 @@ class ChatApp {
   configureMiddlewares() {
     this.app.use(express.json());
     this.app.use(cors({ origin: "*" })); // Consider restricting origins in production
+
+    // Serve static files from the 'uploads' directory
+    this.app.use("/uploads", express.static("uploads"));
   }
 
   defineRoutes() {

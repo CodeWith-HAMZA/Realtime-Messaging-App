@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 
-import AllUsers from "./AllUsers";
+import AllUsers from "./ContactList";
 import { MdAdd } from "react-icons/md";
 interface Props {
   triggerElem: ReactNode;
